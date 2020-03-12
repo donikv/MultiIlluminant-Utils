@@ -1,0 +1,8 @@
+albumentations
+matplotlib
+wxPython
+numpy
+pillow
+opencv
+pytorch
+

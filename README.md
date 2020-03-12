@@ -1,2 +1,0 @@
-# MultiIlluminant-Utils
-MultiIll
