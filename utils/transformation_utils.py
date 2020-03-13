@@ -23,6 +23,7 @@ def color_correct(img, canonical_ill, unknown_ill=None):
 
 def color_correct_tensor(img, canonical_ill, unknown_ill=None):
     trans_mat = np.eye(3)  # .tolist()
+    img = img.cpu()
     shape = canonical_ill.shape
     deltas = torch.zeros((shape[0], shape[1], 3, 3))
     print(deltas.shape)
@@ -32,7 +33,7 @@ def color_correct_tensor(img, canonical_ill, unknown_ill=None):
         for pixel_idx in range(canonical_ill[row_idx].shape[0]):
             delta = torch.diag(1/canonical_ill[row_idx][pixel_idx])
             deltas[row_idx][pixel_idx] = delta
-    return (deltas @ img.unsqueeze(-1)).squeeze()
+    return (deltas @ img.transpose(2, 0).transpose(1, 0).unsqueeze(-1)).squeeze()
 
 ## Preprocessing
 
@@ -44,6 +45,7 @@ def get_training_augmentation():
 
         albu.HorizontalFlip(p=0.5),
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=0.5, border_mode=0),
+        #albu.RandomGamma(p=0.75),
         albu.GridDistortion(p=0.5),
         albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
         albu.Resize(320, 640)

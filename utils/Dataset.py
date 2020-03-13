@@ -6,7 +6,7 @@ from albumentations import pytorch as AT
 from torch.utils.data import Dataset
 import numpy as np
 
-from dataset_utils import load_img_and_gt
+from dataset_utils import load_img_and_gt, visualize
 
 
 class MIDataset(Dataset):
@@ -47,9 +47,10 @@ class MIDataset(Dataset):
         #mask = np.apply_along_axis(lambda x: x[], 2, mask)
         mask = np.array([[(np.array([1, 0]) if pixel[0] > 128 else np.array([0, 1])) for pixel in row] for row in mask])
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
+        gt = torch.tensor(gt, dtype=torch.float32, device="cuda")
         return img, \
                mask,\
-               gt[0]
+               gt
 
     def __len__(self):
         return len(self.image_names)

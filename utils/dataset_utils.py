@@ -3,6 +3,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 
 
 def load_img_and_gt(x, path='./data', folder='dataset_crf/lab'):
@@ -22,6 +23,22 @@ def load_img_and_gt(x, path='./data', folder='dataset_crf/lab'):
     mask = cv2.imread(mask_path)
     mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
     return img, gt, mask
+
+
+def visualize_tensor(image, p_mask, mask, transformed_image=None):
+    def transform(t: torch.tensor):
+        if len(t.shape) == 4:
+            t = t[0]
+        return t.cpu().detach().numpy().transpose(2, 1, 0)
+
+    def mask_to_image(t: np.ndarray):
+        if t.shape[-1] == 3:
+            return t
+        return np.array(
+            [[(np.array([255, 255, 255]) if pixel[0] < pixel[1] else np.array([0, 0, 0])) for pixel in row] for row in t])
+
+    t_image = transform(transformed_image) if transformed_image is not None else None
+    visualize(transform(image).astype(int), mask_to_image(transform(p_mask)), mask_to_image(transform(mask)), transformed_image)
 
 
 def visualize(image, gt, mask, transformed_image=None):
@@ -50,6 +67,7 @@ def calculate_histogram(img: np.ndarray):
     hist = lambda x: cv2.calcHist([img], [x], None, [100], [0, 1])
     return list(map(hist, channels))
 
+
 def cluster(img: np.ndarray):
     Z = img.reshape((-1, 3))
 
@@ -67,14 +85,14 @@ def cluster(img: np.ndarray):
 
     A = Z[label.ravel() == 0]
     B = Z[label.ravel() == 1]
-    #C = Z[label.ravel() == 2]
+    # C = Z[label.ravel() == 2]
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(A[:, 0], A[:, 1], A[:, 2])
     ax.scatter(B[:, 0], B[:, 1], B[:, 2], c='r')
     ax.scatter(center[:, 0], center[:, 1], center[:, 2], s=80, c='y', marker='s')
-    #ax.scatter(C[:, 0], C[:, 1], C[:, 2], c='g')
+    # ax.scatter(C[:, 0], C[:, 1], C[:, 2], c='g')
     # Now convert back into uint8, and make original image
     plt.show()
     return ret, label, center

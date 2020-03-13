@@ -7,6 +7,7 @@ from torch.utils.data.dataloader import DataLoader
 
 from Dataset import MIDataset
 from Losses import BCEDiceLoss
+from dataset_utils import visualize_tensor
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 
 ENCODER = 'resnet50'
@@ -63,6 +64,8 @@ for epoch in range(num_epochs):
         p_mask, label = model(data)
         optimizer.zero_grad()
         loss = criterion2(p_mask, mask).mean()
+        if epoch == 10 and batch_idx == 0:
+            visualize_tensor(data, mask, p_mask)
 #         loss += criterion2(label, )
         loss.backward()
         optimizer.step()
@@ -73,6 +76,10 @@ for epoch in range(num_epochs):
         torch.cuda.empty_cache()
     for batch_idx, (data, mask, gt) in enumerate(valid_loader):
         p_mask, label = model(data)
+
+        if epoch == 10:
+            visualize_tensor(data, mask, p_mask)
+            exit()
         optimizer.zero_grad()
         loss = criterion2(p_mask, mask).mean()
 #         loss += criterion2(label, )
