@@ -4,15 +4,18 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 
 
-def load_img_and_gt(x, path='./data', folder='dataset_crf/lab'):
+def load_img_and_gt(x, path='./data', folder='dataset_crf/lab', use_mask=True):
     """
     Return image based on image name and folder.
     """
     images_data_folder = f"{path}/{folder}/srgb8bit"
     gt_data_folder = f"{path}/{folder}/groundtruth"
-    mask_data_folder = f"{path}/{folder}/masks"
+    mask_data_folder = f"{path}/{folder}/gt_mask"
+    if use_mask:
+        mask_data_folder = f"{path}/{folder}/masks"
     image_path = os.path.join(images_data_folder, x)
     gt_path = os.path.join(gt_data_folder, x)
     mask_path = os.path.join(mask_data_folder, x)
@@ -25,20 +28,24 @@ def load_img_and_gt(x, path='./data', folder='dataset_crf/lab'):
     return img, gt, mask
 
 
+def to_np_img(t: torch.tensor):
+    if len(t.shape) == 4:
+        t = t[0]
+    return t.cpu().detach().numpy().transpose(1, 2, 0)
+
+
+def mask_to_image(t: np.ndarray):
+    if t.shape[-1] == 3:
+        return t
+    return np.array(
+        [[(np.array([255, 255, 255]) if pixel[0] < pixel[1] else np.array([0, 0, 0])) for pixel in row] for row in
+         t])
+
 def visualize_tensor(image, p_mask, mask, transformed_image=None):
-    def transform(t: torch.tensor):
-        if len(t.shape) == 4:
-            t = t[0]
-        return t.cpu().detach().numpy().transpose(2, 1, 0)
 
-    def mask_to_image(t: np.ndarray):
-        if t.shape[-1] == 3:
-            return t
-        return np.array(
-            [[(np.array([255, 255, 255]) if pixel[0] < pixel[1] else np.array([0, 0, 0])) for pixel in row] for row in t])
-
-    t_image = transform(transformed_image) if transformed_image is not None else None
-    visualize(transform(image).astype(int), mask_to_image(transform(p_mask)), mask_to_image(transform(mask)), transformed_image)
+    t_image = to_np_img(transformed_image) if transformed_image is not None else None
+    visualize(to_np_img(image).astype(int), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
+              transformed_image)
 
 
 def visualize(image, gt, mask, transformed_image=None):
@@ -62,20 +69,28 @@ def visualize(image, gt, mask, transformed_image=None):
     plt.show()
 
 
+def get_mask_from_gt(gt):
+    gt = gt.cpu()
+    _, _, centers = cluster(gt, draw=False)
+    mask = np.array([[(np.array([1, 0]) if np.linalg.norm(pixel - centers[0]) > np.linalg.norm(
+        pixel - centers[1]) else np.array([0, 1])) for pixel in row] for row in gt])
+    return mask
+
+
 def calculate_histogram(img: np.ndarray):
     channels = [0, 1, 2]
     hist = lambda x: cv2.calcHist([img], [x], None, [100], [0, 1])
     return list(map(hist, channels))
 
 
-def cluster(img: np.ndarray):
+def cluster(img: np.ndarray, draw=True):
     Z = img.reshape((-1, 3))
 
     # convert to np.float32
     Z = np.float32(Z)
-    mask = (Z > 0) & (Z < 1)
+    mask = (Z > 0) & (Z < 255)
     mask = np.array(list(map(lambda x: x.all(), mask)))
-    print(mask)
+    # print(mask)
     Z = Z[mask]
 
     # define criteria, number of clusters(K) and apply kmeans()
@@ -86,15 +101,15 @@ def cluster(img: np.ndarray):
     A = Z[label.ravel() == 0]
     B = Z[label.ravel() == 1]
     # C = Z[label.ravel() == 2]
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(A[:, 0], A[:, 1], A[:, 2])
-    ax.scatter(B[:, 0], B[:, 1], B[:, 2], c='r')
-    ax.scatter(center[:, 0], center[:, 1], center[:, 2], s=80, c='y', marker='s')
-    # ax.scatter(C[:, 0], C[:, 1], C[:, 2], c='g')
-    # Now convert back into uint8, and make original image
-    plt.show()
+    if draw:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(A[:, 0], A[:, 1], A[:, 2])
+        ax.scatter(B[:, 0], B[:, 1], B[:, 2], c='r')
+        ax.scatter(center[:, 0], center[:, 1], center[:, 2], s=80, c='y', marker='s')
+        # ax.scatter(C[:, 0], C[:, 1], C[:, 2], c='g')
+        # Now convert back into uint8, and make original image
+        plt.show()
     return ret, label, center
 
 

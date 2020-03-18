@@ -1,6 +1,8 @@
 import numpy as np
 import torch
 
+from dataset_utils import to_np_img
+
 
 def color_correct(img, canonical_ill, unknown_ill=None):
     trans_mat = np.eye(3)  # .tolist()
@@ -20,6 +22,14 @@ def color_correct(img, canonical_ill, unknown_ill=None):
     torch.cat(trans_img, out=b)
     return trans_img
 
+
+def color_correct_with_mask(img, mask, c1, c2):
+    mask = to_np_img(mask)
+    #c1 = torch.tensor(c1)
+    #c2 = torch.tensor(c2)
+    gt = np.array(
+        [[c1 if pixel[0] < pixel[1] else c2 for pixel in row] for row in mask])
+    return color_correct_tensor(img[0], torch.tensor(gt))
 
 def color_correct_tensor(img, canonical_ill, unknown_ill=None):
     trans_mat = np.eye(3)  # .tolist()
