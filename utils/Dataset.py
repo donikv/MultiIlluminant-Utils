@@ -50,7 +50,7 @@ class MIDataset(Dataset):
             gt = preprocessed['mask']
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         #mask = np.apply_along_axis(lambda x: x[], 2, mask)
-        gt = torch.tensor(gt, dtype=torch.float32, device="cuda")
+        gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         mask = np.array([[(np.array([1, 0]) if pixel[0] > 128 else np.array([0, 1])) for pixel in row] for row in mask])
             # mask = get_mask_from_gt(gt)
             # name = f"{self.path}/{self.folder}/gt_mask/{image_name}"

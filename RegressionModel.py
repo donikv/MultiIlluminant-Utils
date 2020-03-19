@@ -12,7 +12,7 @@ from dataset_utils import visualize_tensor
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 
 
-model, preprocessing_fn = get_model(num_classes=2)
+model, preprocessing_fn = get_model(num_classes=3)
 
 num_workers = 0
 bs = 4
@@ -39,8 +39,7 @@ optimizer = torch.optim.Adam([
     {'params': model.encoder.parameters(), 'lr': 1e-3},
 ])
 scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
-criterion1 = smp.utils.losses.DiceLoss(eps=1.)
-criterion2 = BCEDiceLoss()
+criterion1 = smp.utils.losses.L1Loss()
 
 # -- TRAINING --
 
@@ -48,7 +47,8 @@ for epoch in range(num_epochs):
     for batch_idx, (data, mask, gt) in enumerate(train_loader):
         p_mask, label = model(data)
         optimizer.zero_grad()
-        loss = criterion2(p_mask, mask).mean()
+        gt = gt / 255
+        loss = criterion1(p_mask, gt).mean()
         #         loss += criterion2(label, )
         loss.backward()
         optimizer.step()
@@ -59,15 +59,15 @@ for epoch in range(num_epochs):
         torch.cuda.empty_cache()
     for batch_idx, (data, mask, gt) in enumerate(valid_loader):
         p_mask, label = model(data)
-
+        gt = gt / 255
         if batch_idx == 0:
-            visualize_tensor(data, mask, p_mask)
+            visualize_tensor(data[0], gt[0], p_mask[0])
         optimizer.zero_grad()
-        loss = criterion2(p_mask, mask).mean()
+        loss = criterion1(p_mask, gt).mean()
         #         loss += criterion2(label, )
         if batch_idx % log_interval == 0:
             print('Valid Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(valid_loader.dataset),
                        100. * batch_idx / len(valid_loader), loss.item()))
         torch.cuda.empty_cache()
-torch.save(model.state_dict(), './models/unet-efficientnet-b0-gt')
+torch.save(model.state_dict(), './models/unet-efficientnet-b0-reg-l1')
