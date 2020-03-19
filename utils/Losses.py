@@ -41,6 +41,18 @@ def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation='sigmoid'):
     return score
 
 
+def angular_loss(predicted: torch.Tensor, real: torch.Tensor):
+    def normalize(x: torch.Tensor):
+        x_normed = x / x.max(1, keepdim=True).values
+        return x_normed
+    pre = normalize(predicted)
+    r = normalize(real)
+    dot = r * pre
+    ac = dot.acos()
+    s = torch.sum(ac, dim=1)
+    return s
+
+
 class DiceLoss(nn.Module):
     __name__ = 'dice_loss'
 

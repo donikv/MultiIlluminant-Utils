@@ -50,7 +50,7 @@ def color_correct_tensor(img, canonical_ill, unknown_ill=None):
 import albumentations as albu
 
 
-def get_training_augmentation():
+def get_training_augmentation(x: int = 320, y: int = 640):
     train_transform = [
 
         albu.HorizontalFlip(p=0.5),
@@ -58,15 +58,15 @@ def get_training_augmentation():
         #albu.RandomGamma(p=0.75),
         albu.GridDistortion(p=0.5),
         albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
-        albu.Resize(320, 640)
+        albu.Resize(x, y)
     ]
     return albu.Compose(train_transform)
 
 
-def get_validation_augmentation():
+def get_validation_augmentation(x: int = 320, y: int = 640):
     """Add paddings to make image shape divisible by 32"""
     test_transform = [
-        albu.Resize(320, 640)
+        albu.Resize(x, y)
     ]
     return albu.Compose(test_transform)
 

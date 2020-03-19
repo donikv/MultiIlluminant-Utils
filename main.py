@@ -2,7 +2,7 @@ import torch
 
 import segmentation_models_pytorch as smp
 
-from Dataset import MIDataset
+from Dataset import MIDataset, MIPatchedDataset
 from torch.utils.data.dataloader import DataLoader
 
 from Models import get_model
@@ -29,15 +29,15 @@ def test_model(path, images_path):
 
 
 
-test_model('./models/unet-efficientnet-b0-gt', 'special')
-exit(0)
-img, mask, gt = load_img_and_gt('bmug_b_r.png')
+#test_model('./models/unet-efficientnet-b0-gt', 'special')
+#exit(0)
+#img, mask, gt = load_img_and_gt('bmug_b_r.png')
 # print(img-gt)
 # print(gt.shape)
-dataset = MIDataset(datatype='train', transforms=get_training_augmentation())
+dataset = MIPatchedDataset(datatype='train', transforms=get_training_augmentation(), use_mask=True)
 img, mask, gt = dataset[10]
 # hists = calculate_histogram(gt.numpy())
-_, _, center = cluster(gt)
+_, _, center = cluster(gt.cpu())
 # print(center * 255)
 # print(gt.shape)
 # print(img.shape)

@@ -5,8 +5,8 @@ import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-from Dataset import MIDataset
-from Losses import BCEDiceLoss
+from Dataset import MIDataset, MIPatchedDataset
+from Losses import BCEDiceLoss, angular_loss
 from Models import get_model
 from dataset_utils import visualize_tensor
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
@@ -15,11 +15,11 @@ from transformation_utils import get_training_augmentation, get_preprocessing, g
 model, preprocessing_fn = get_model(num_classes=3)
 
 num_workers = 0
-bs = 4
-train_dataset = MIDataset(datatype='train',
-                          transforms=get_training_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
-valid_dataset = MIDataset(folder="dataset_crf/valid", datatype='valid',
-                          transforms=get_validation_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+bs = 16
+train_dataset = MIPatchedDataset(datatype='train',
+                          transforms=get_training_augmentation(32, 64), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+valid_dataset = MIPatchedDataset(folder="dataset_crf/valid", datatype='valid',
+                          transforms=get_validation_augmentation(32, 64), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
 valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
@@ -48,6 +48,7 @@ for epoch in range(num_epochs):
         p_mask, label = model(data)
         optimizer.zero_grad()
         gt = gt / 255
+        print(angular_loss(p_mask, gt))
         loss = criterion1(p_mask, gt).mean()
         #         loss += criterion2(label, )
         loss.backward()

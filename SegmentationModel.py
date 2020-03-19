@@ -5,7 +5,7 @@ import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-from Dataset import MIDataset
+from Dataset import MIDataset, MIPatchedDataset
 from Losses import BCEDiceLoss
 from Models import get_model
 from dataset_utils import visualize_tensor
@@ -16,9 +16,9 @@ model, preprocessing_fn = get_model(num_classes=2)
 
 num_workers = 0
 bs = 4
-train_dataset = MIDataset(datatype='train',
+train_dataset = MIPatchedDataset(datatype='train',
                           transforms=get_training_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
-valid_dataset = MIDataset(folder="dataset_crf/valid", datatype='valid',
+valid_dataset = MIPatchedDataset(folder="dataset_crf/valid", datatype='valid',
                           transforms=get_validation_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)

@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/RegressionModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RegressionModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/RegressionModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SegmentationModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/SegmentationModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/Losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
@@ -27,6 +29,7 @@
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
+        <option value="Donik &lt;donikv@gmail.com&gt;" />
         <option value="Donik Vršnak &lt;donikv@gmail.com&gt;" />
       </list>
     </option>
@@ -70,7 +73,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.SegmentationModel (1)">
+  <component name="RunManager" selected="Python.RegressionModel">
     <configuration name="MultiIlluminantConv" type="PythonConfigurationType" factoryName="Python">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -97,9 +100,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -227,8 +227,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.SegmentationModel (1)" />
         <item itemvalue="Python.RegressionModel" />
+        <item itemvalue="Python.SegmentationModel (1)" />
         <item itemvalue="Python.make_mask" />
         <item itemvalue="Python.frame" />
         <item itemvalue="Python.a" />
@@ -254,6 +254,8 @@
       <workItem from="1584092211150" duration="29255000" />
       <workItem from="1584519728652" duration="2080000" />
       <workItem from="1584532063672" duration="6069000" />
+      <workItem from="1584606541152" duration="2972000" />
+      <workItem from="1584610499562" duration="2600000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -290,7 +292,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584531589282</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Adds regression model">
+      <created>1584606610390</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1584606610390</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -313,7 +322,8 @@
     <MESSAGE value="Adds losses and makes the segmentation model runnable" />
     <MESSAGE value="Adds gt-mask" />
     <MESSAGE value="Adds maodels to gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds maodels to gitignore" />
+    <MESSAGE value="Adds regression model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds regression model" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583755604639">
@@ -441,9 +451,26 @@
     <state x="623" y="227" width="672" height="706" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1584355488814" />
     <state x="623" y="245" width="672" height="678" key="search.everywhere.popup/0.27.1920.999@0.27.1920.999" timestamp="1583916479180" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>36</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/utils/Losses.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1584614159291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminantConv$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1583760427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel__1_.coverage" NAME="SegmentationModel (1) Coverage Results" MODIFIED="1584096648050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1584351792881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1584608301155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
