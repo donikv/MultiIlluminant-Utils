@@ -58,7 +58,8 @@ def get_training_augmentation(x: int = 320, y: int = 640):
         #albu.RandomGamma(p=0.75),
         albu.GridDistortion(p=0.5),
         albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
-        albu.Resize(x, y)
+        albu.Resize(x, y),
+        albu.Normalize(always_apply=True),
     ]
     return albu.Compose(train_transform)
 
