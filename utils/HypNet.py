@@ -1,8 +1,10 @@
 import torch
 from torch import nn
 from torch.optim import optimizer
+import torch.nn.functional as F
 
 from Models import get_model
+from dataset_utils import get_patches_for_image, combine_patches_into_image
 
 
 class HypNet(nn.Module):
@@ -19,6 +21,7 @@ class HypNet(nn.Module):
             nn.ReLU(),
             nn.Conv2d(self.c1_out, self.c2_out, (4, 4), stride=2),
             nn.ReLU(),
+            nn.Dropout(),
         )
         self.branch_a = nn.Sequential(
             nn.Linear(self.c2_out * 4 * 4, 120),
@@ -49,7 +52,15 @@ class HypNet(nn.Module):
     def get_selection_class(self, outa, outb, gt, loss):
         la = loss(outa, gt)
         lb = loss(outb, gt)
-        return [1, 0] if la > lb else [0, 1], la, lb
+        return ([1, 0]) if la > lb else ([0, 1]), la, lb
+
+    def get_selection_class_per_patch(self, outa, outb, gt, loss):
+        sels = []
+        for pa, pb, gtp in zip(outa, outb, gt):
+            la = loss(outa, gt)
+            lb = loss(outb, gt)
+            sels.append(torch.tensor([1, 0]) if la > lb else torch.tensor([0, 1]))
+        return sels
 
     def back_pass(self, outa, outb, gt, optim: optimizer.Optimizer, loss):
         optim.zero_grad()
@@ -71,7 +82,20 @@ class SelUnet(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.model = get_model(num_classes=2)
+        self.model, _ = get_model(num_classes=2)
+        self.model.cuda(0)
 
     def forward(self, image):
         return self.model(image)
+
+    def select(self, hypNet: HypNet, image, gt, patch_height_ratio, patch_width_ratio, loss):
+        patches = get_patches_for_image(image, patch_height_ratio, patch_width_ratio)
+        gt = get_patches_for_image(gt, patch_height_ratio, patch_width_ratio).mean(2).mean(2)
+        out_a, out_b = hypNet(patches)
+        sel = torch.stack(hypNet.get_selection_class_per_patch(out_a, out_b, gt, loss))
+
+        sel_img = combine_patches_into_image(sel, patch_height_ratio, patch_width_ratio).transpose(0, 1).transpose(0, 2)
+        _, image_height, image_width = image.shape
+        _, sel_img_height, sel_img_width = sel_img.shape
+        sel_img_gt = F.pad(sel_img, [0, image_width - sel_img_width, 0, image_height-sel_img_height], 'constant').cuda(0)
+        return self.model(image.unsqueeze(0)), sel_img_gt.unsqueeze(0)

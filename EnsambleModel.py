@@ -18,6 +18,7 @@ model.cuda(0)
 
 num_workers = 0
 bs = 16
+
 train_dataset = MIPatchedDataset(datatype='train',
                           transforms=get_training_augmentation(44, 44), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
 valid_dataset = MIPatchedDataset(folder="dataset_crf/valid", datatype='valid',
@@ -31,7 +32,7 @@ loaders = {
     "valid": valid_loader
 }
 
-num_epochs = 19
+num_epochs = 10
 log_interval = 5
 logdir = "./logs/segmentation"
 
@@ -45,7 +46,7 @@ criterion1 = smp.utils.losses.MSELoss()
 for epoch in range(num_epochs):
     for batch_idx, (data, mask, gt) in enumerate(train_loader):
         out_a, out_b = model(data)
-        #gt = gt / 255
+        gt = gt / 255
         gt = gt.mean(2).mean(2)
         _, loss, loss_b = model.back_pass(out_a, out_b, gt, optimizer, criterion1)
         if batch_idx == 0:
@@ -60,7 +61,7 @@ for epoch in range(num_epochs):
         torch.cuda.empty_cache()
     for batch_idx, (data, mask, gt) in enumerate(valid_loader):
         out_a, out_b = model(data)
-        #gt = gt / 255
+        gt = gt / 255
         gt = gt.mean(2).mean(2)
         _, loss, loss_b = model.get_selection_class(out_a, out_b, gt, criterion1)
         if batch_idx == 0:
@@ -76,11 +77,66 @@ for epoch in range(num_epochs):
                        100. * batch_idx / len(valid_loader), loss.item(), loss_b.item()))
         torch.cuda.empty_cache()
 
+
 train_dataset = MIDataset(datatype='train',
-                          transforms=get_training_augmentation(32, 64), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_training_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
 valid_dataset = MIDataset(folder="dataset_crf/valid", datatype='valid',
-                          transforms=get_validation_augmentation(32, 64), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_validation_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
 valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
+
+selNet = HypNet.SelUnet()
+selNet.cuda(0)
+
+num_epochs = 5
+log_interval = 5
+logdir = "./logs/segmentation"
+
+# model, criterion, optimizer
+optimizer = torch.optim.Adam([
+    {'params': selNet.model.decoder.parameters(), 'lr': 1e-2},
+    {'params': selNet.model.encoder.parameters(), 'lr': 1e-3},
+])
+criterion = BCEDiceLoss()
+
+patch_width_ratio = 44. / 640
+patch_height_ratio = 44. / 320
+
+for epoch in range(num_epochs):
+    for batch_idx, (data, mask, gt) in enumerate(train_loader):
+        gt = gt / 255
+        cum_loss = 0
+        for img, gti in zip(data, gt):
+            sel, sel_gt = selNet.select(model, img, gti, patch_height_ratio, patch_width_ratio, criterion1)
+            sel, sel_gt = sel[0], sel_gt.type(torch.FloatTensor).cuda(0)
+            optimizer.zero_grad()
+            loss = criterion(sel, sel_gt).mean()
+            loss.backward()
+            cum_loss += loss.detach()
+            optimizer.step()
+        if batch_idx % log_interval == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLossA: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                       100. * batch_idx / len(train_loader), cum_loss.item()))
+        loss = None
+        torch.cuda.empty_cache()
+    for batch_idx, (data, mask, gt) in enumerate(valid_loader):
+        gt = gt / 255
+        loss = None
+        for img, gti in zip(data, gt):
+            sel, sel_gt = selNet.select(model, img, gti, patch_height_ratio, patch_width_ratio, criterion1)
+            sel, sel_gt = sel[0], sel_gt.type(torch.FloatTensor).cuda(0)
+            optimizer.zero_grad()
+            if loss is None:
+                loss = criterion(sel, sel_gt).mean().detach()
+            else:
+                loss += criterion(sel, sel_gt).mean().detach()
+        if batch_idx % log_interval == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLossA: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                       100. * batch_idx / len(train_loader), loss.item()))
+        loss = None
+        torch.cuda.empty_cache()
+
 torch.save(model.state_dict(), './models/ensemble-model-hyp')

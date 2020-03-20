@@ -1,4 +1,5 @@
 import os
+from math import ceil
 
 import cv2
 import matplotlib.pyplot as plt
@@ -41,8 +42,8 @@ def mask_to_image(t: np.ndarray):
         [[(np.array([255, 255, 255]) if pixel[0] < pixel[1] else np.array([0, 0, 0])) for pixel in row] for row in
          t])
 
-def visualize_tensor(image, p_mask, mask, transformed_image=None):
 
+def visualize_tensor(image, p_mask, mask, transformed_image=None):
     t_image = to_np_img(transformed_image) if transformed_image is not None else None
     visualize(to_np_img(image).astype(int), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
               transformed_image)
@@ -55,13 +56,13 @@ def visualize(image, gt, mask, transformed_image=None):
     """
 
     if transformed_image is None:
-        f, ax = plt.subplots(2, 2, figsize=(50, 50))
+        f, ax = plt.subplots(2, 2, figsize=(30, 30))
 
         ax[0][0].imshow(image)
         ax[0][1].imshow(mask)
         ax[1][0].imshow(gt)
     else:
-        f, ax = plt.subplots(2, 2, figsize=(50, 50))
+        f, ax = plt.subplots(2, 2, figsize=(30, 30))
         ax[1][1].imshow(transformed_image)
         ax[1][0].imshow(gt)
         ax[0][0].imshow(image)
@@ -120,3 +121,54 @@ def plot_histograms(hists):
         ax[idx].bar(np.linspace(0, 255, len(hist)), hist.squeeze())
 
     plt.show()
+
+
+def get_patch_with_index(image, idx, patch_height_ratio, patch_width_ratio):
+    patches_per_row = int(1 / patch_width_ratio)
+    image_height, image_width, _ = image.shape
+    patch_x = int(idx % patches_per_row)
+    patch_y = int(idx / patches_per_row)
+
+    def get_patch(img, py, px, phr, pwr, ih, iw):
+        y = int(ih * phr)
+        x = int(iw * pwr)
+        return img[py:py + int(ih * phr)][px:px + int(iw * pwr)][:]
+
+    return get_patch(image, patch_y, patch_x, patch_height_ratio, patch_width_ratio, image_height,
+                     image_width)
+
+
+def get_patch_with_index_tensor(image, idx, patch_height_ratio, patch_width_ratio):
+    patches_per_row = int(1 / patch_width_ratio)
+    _, image_height, image_width = image.shape
+    patch_x = int(idx % patches_per_row)
+    patch_y = int(idx / patches_per_row)
+
+    def get_patch(img, py, px, phr, pwr, ih, iw):
+        y = int(ih * phr)
+        x = int(iw * pwr)
+        return img.narrow(1, py, y).narrow(2, px, x)
+
+    return get_patch(image, patch_y, patch_x, patch_height_ratio, patch_width_ratio, image_height,
+                     image_width)
+
+
+def get_patches_for_image(image, patch_height_ratio, patch_width_ratio):
+    patches_per_img = ceil(1 / (patch_height_ratio * patch_width_ratio))
+    patches = []
+    for idx in range(patches_per_img):
+        patches.append(get_patch_with_index_tensor(image, idx, patch_height_ratio, patch_width_ratio))
+    return torch.stack(patches).cuda(0)
+
+
+def combine_patches_into_image(patches, patch_height_ratio, patch_width_ratio, patch_height=44, patch_width=44):
+    ppr = int(1 / patch_width_ratio)
+    ppc = int(1 / patch_height_ratio)
+    img = []
+    for idx, patch in enumerate(patches):
+        patch_image = torch.stack([torch.stack([patch for i in range(patch_height)]) for j in range(patch_width)])
+        if idx % ppr == 0:
+            img.append(patch_image)
+        else:
+            img[-1] = torch.cat([img[-1], patch_image], dim=1)
+    return torch.cat(img[:-1])

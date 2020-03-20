@@ -8,7 +8,7 @@ from albumentations import pytorch as AT
 from torch.utils.data import Dataset
 import numpy as np
 
-from dataset_utils import load_img_and_gt, visualize, get_mask_from_gt, mask_to_image
+from dataset_utils import load_img_and_gt, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index
 
 
 class MIDataset(Dataset):
@@ -86,19 +86,9 @@ class MIPatchedDataset(MIDataset):
         image_name = self.image_names[image_idx]
         image, gt, mask = load_img_and_gt(image_name, self.path, self.folder, use_mask=self.use_mask)
 
-        image_height, image_width, _ = image.shape
-        patches_per_row = int(1 / self.patch_width_ratio)
-        patch_y = int(idx % patches_per_img % patches_per_row)
-        patch_x = int(idx % patches_per_img / patches_per_row)
-
-        def get_patch(img, py, px, phr, pwr, ih, iw):
-            return img[py:py + int(ih * phr)][px:px + int(iw * pwr)][:]
-
-        image = get_patch(image, patch_y, patch_x, self.patch_height_ratio, self.patch_width_ratio, image_height,
-                          image_width)
-        mask = get_patch(mask, patch_y, patch_x, self.patch_height_ratio, self.patch_width_ratio, image_height,
-                         image_width)
-        gt = get_patch(gt, patch_y, patch_x, self.patch_height_ratio, self.patch_width_ratio, image_height, image_width)
+        image = get_patch_with_index(image, image_idx, self.patch_height_ratio, self.patch_width_ratio)
+        mask = get_patch_with_index(mask, image_idx, self.patch_height_ratio, self.patch_width_ratio)
+        gt = get_patch_with_index(gt, image_idx, self.patch_height_ratio, self.patch_width_ratio)
 
         augmented = self.transforms(image=image, mask=mask)
         img = augmented['image']
