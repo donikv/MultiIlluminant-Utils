@@ -32,6 +32,8 @@ def load_img_and_gt(x, path='./data', folder='dataset_crf/lab', use_mask=True):
 def to_np_img(t: torch.tensor):
     if len(t.shape) == 4:
         t = t[0]
+    if t.shape[-1] == 3 or t.shape[-1] == 2:
+        return t.cpu().detach().numpy()
     return t.cpu().detach().numpy().transpose(1, 2, 0)
 
 
@@ -43,10 +45,26 @@ def mask_to_image(t: np.ndarray):
          t])
 
 
+def transform_from_log(img: np.ndarray):
+    def trans(log_pixel):
+        z = np.sqrt(np.exp(- log_pixel[0])**2 + np.exp(- log_pixel[1])**2 + 1)
+        return np.array([np.exp(- log_pixel[0])/z, 1/z, np.exp(- log_pixel[1])/z])
+    img_log = np.array([[trans(pixel) for pixel in row] for row in img])
+    return img_log
+
+
+def log_to_image(t: np.ndarray):
+    if t is None:
+        return t
+    if t.shape[-1] == 3:
+        return t
+    return transform_from_log(t)
+
+
 def visualize_tensor(image, p_mask, mask, transformed_image=None):
     t_image = to_np_img(transformed_image) if transformed_image is not None else None
-    visualize(to_np_img(image).astype(int), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
-              transformed_image)
+    visualize(log_to_image(to_np_img(image)).astype(int), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
+              log_to_image(transformed_image))
 
 
 def visualize(image, gt, mask, transformed_image=None):

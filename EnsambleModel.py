@@ -12,17 +12,19 @@ from Models import get_model
 from dataset_utils import visualize_tensor
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 
+use_log = False
+in_channels = 2 if use_log else 3
 
-model = HypNet.HypNet(patch_height=44, patch_width=44)
+model = HypNet.HypNet(patch_height=44, patch_width=44, in_channels=in_channels, out_channels=in_channels)
 model.cuda(0)
 
 num_workers = 0
 bs = 16
 
 train_dataset = MIPatchedDataset(datatype='train',
-                          transforms=get_training_augmentation(44, 44), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_training_augmentation(44, 44), use_mask=True, log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
 valid_dataset = MIPatchedDataset(folder="dataset_crf/valid", datatype='valid',
-                          transforms=get_validation_augmentation(44, 44), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_validation_augmentation(44, 44), use_mask=True, log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
 valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
@@ -32,12 +34,12 @@ loaders = {
     "valid": valid_loader
 }
 
-num_epochs = 10
+num_epochs = 5
 log_interval = 5
 logdir = "./logs/segmentation"
 
 # model, criterion, optimizer
-optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-2)
+optimizer = torch.optim.Adam(params=model.parameters(), lr=5e-3)
 scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
 criterion1 = smp.utils.losses.MSELoss()
 
@@ -48,7 +50,7 @@ for epoch in range(num_epochs):
         out_a, out_b = model(data)
         gt = gt / 255
         gt = gt.mean(2).mean(2)
-        _, loss, loss_b = model.back_pass(out_a, out_b, gt, optimizer, criterion1)
+        _, loss, loss_b = model.back_pass(out_a, out_b, gt, optimizer, criterion1, batch_idx < 500 and epoch == 0)
         if batch_idx == 0:
             gt_img = torch.stack([torch.stack([gt[0] for i in range(44)]) for j in range(44)])
             preda_img = torch.stack([torch.stack([out_a[0] for i in range(44)]) for j in range(44)])
@@ -79,9 +81,9 @@ for epoch in range(num_epochs):
 
 
 train_dataset = MIDataset(datatype='train',
-                          transforms=get_training_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_training_augmentation(), use_mask=True, log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
 valid_dataset = MIDataset(folder="dataset_crf/valid", datatype='valid',
-                          transforms=get_validation_augmentation(), use_mask=True)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                          transforms=get_validation_augmentation(), use_mask=True, log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
 valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
@@ -89,7 +91,7 @@ valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_worke
 selNet = HypNet.SelUnet()
 selNet.cuda(0)
 
-num_epochs = 5
+num_epochs = 10
 log_interval = 5
 logdir = "./logs/segmentation"
 
@@ -140,3 +142,4 @@ for epoch in range(num_epochs):
         torch.cuda.empty_cache()
 
 torch.save(model.state_dict(), './models/ensemble-model-hyp')
+torch.save(selNet.model.state_dict(), './models/ensemble-model-sel')

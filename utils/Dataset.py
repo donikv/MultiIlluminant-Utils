@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 import numpy as np
 
 from dataset_utils import load_img_and_gt, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index
+from transformation_utils import transform_to_log
 
 
 class MIDataset(Dataset):
@@ -17,7 +18,7 @@ class MIDataset(Dataset):
                  img_ids: object = None,
                  transforms: object = albu.Compose([albu.HorizontalFlip(), AT.ToTensor()]),
                  preprocessing: object = None,
-                 use_mask: bool = False) -> object:
+                 use_mask: bool = False, log_transform=False) -> object:
         self.df = df
         self.datatype = datatype
         self.img_ids = img_ids
@@ -26,6 +27,7 @@ class MIDataset(Dataset):
         self.use_mask = use_mask
         self.path = path
         self.folder = folder
+        self.log_transform = log_transform
 
         if self.datatype != 'test':
             self.gt_names = os.listdir(f"{path}/{folder}/groundtruth/{special_folder}")
@@ -38,6 +40,10 @@ class MIDataset(Dataset):
     def __getitem__(self, idx):
         image_name = self.image_names[idx]
         image, gt, mask = load_img_and_gt(image_name, self.path, self.folder, use_mask=self.use_mask)
+        if self.log_transform:
+            image = transform_to_log(image)
+            gt = transform_to_log(gt)
+
         augmented = self.transforms(image=image, mask=mask)
         img = augmented['image']
         mask = augmented['mask']
@@ -74,9 +80,9 @@ class MIPatchedDataset(MIDataset):
                  transforms: object = albu.Compose([albu.HorizontalFlip(), AT.ToTensor()]),
                  preprocessing: object = None,
                  use_mask: bool = False,
-                 patch_width_ratio: float = 1. / 10, patch_height_ratio: float = 1. / 10) -> object:
+                 patch_width_ratio: float = 1. / 10, patch_height_ratio: float = 1. / 10, log_transform=False) -> object:
         super(MIPatchedDataset, self).__init__(path, folder, special_folder, df, datatype, img_ids, transforms,
-                                               preprocessing, use_mask)
+                                               preprocessing, use_mask, log_transform)
         self.patch_width_ratio = patch_width_ratio
         self.patch_height_ratio = patch_height_ratio
 
@@ -85,6 +91,9 @@ class MIPatchedDataset(MIDataset):
         image_idx = int(idx / patches_per_img)
         image_name = self.image_names[image_idx]
         image, gt, mask = load_img_and_gt(image_name, self.path, self.folder, use_mask=self.use_mask)
+        if self.log_transform:
+            image = transform_to_log(image)
+            gt = transform_to_log(gt)
 
         image = get_patch_with_index(image, image_idx, self.patch_height_ratio, self.patch_width_ratio)
         mask = get_patch_with_index(mask, image_idx, self.patch_height_ratio, self.patch_width_ratio)

@@ -2,13 +2,14 @@ import torch
 
 import segmentation_models_pytorch as smp
 
+import HypNet
 from Dataset import MIDataset, MIPatchedDataset
 from torch.utils.data.dataloader import DataLoader
 
 from Models import get_model
 from dataset_utils import load_img_and_gt, visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor
 from transformation_utils import color_correct, color_correct_tensor, get_training_augmentation, \
-    get_validation_augmentation, color_correct_with_mask
+    get_validation_augmentation, color_correct_with_mask, to_tensor
 
 
 def test_model(path, images_path):
@@ -28,8 +29,34 @@ def test_model(path, images_path):
         input("Press Enter to continue...")
 
 
+def test_hyp_sel(paths, images_path, use_log=False):
+    in_channels = 2 if use_log else 3
+    dataset = MIDataset(datatype='test', folder='dataset_crf/lab', special_folder=images_path,
+                        transforms=get_validation_augmentation(), use_mask=True)
+
+    loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=0)
+
+    model = HypNet.HypNet(patch_height=44, patch_width=44, in_channels=in_channels, out_channels=in_channels)
+    model.cuda(0)
+    model.load_state_dict(torch.load(paths[0]))
+
+    selNet = HypNet.SelUnet()
+    selNet.cuda(0)
+    selNet.model.load_state_dict(torch.load(paths[1]))
+
+    patch_width_ratio = 44. / 640
+    patch_height_ratio = 44. / 320
+
+    for batch_idx, (data, mask, gt) in enumerate(loader):
+        gt = gt / 255
+        for img, gti in zip(data, gt):
+            final = selNet.test(model, img, gti, patch_height_ratio, patch_width_ratio)
+            visualize_tensor(img.cpu(), gti, final.cpu())
+        torch.cuda.empty_cache()
+
 
 #test_model('./models/unet-efficientnet-b0-gt', 'special')
+test_hyp_sel(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
 #exit(0)
 #img, mask, gt = load_img_and_gt('bmug_b_r.png')
 # print(img-gt)
