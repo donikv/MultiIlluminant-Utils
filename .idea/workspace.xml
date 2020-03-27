@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EnsambleModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/EnsambleModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/HypNet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/HypNet.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
@@ -53,7 +52,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="PyScientificConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -81,9 +80,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -103,9 +99,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -267,6 +260,7 @@
       <workItem from="1584956919480" duration="8963000" />
       <workItem from="1585044821427" duration="14139000" />
       <workItem from="1585155806917" duration="599000" />
+      <workItem from="1585305475114" duration="9415000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -324,7 +318,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584655822494</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Adds small tweaks to utils">
+      <created>1585305526576</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1585305526576</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -350,7 +351,8 @@
     <MESSAGE value="Adds regression model" />
     <MESSAGE value="Adds initial implementation of angular loss" />
     <MESSAGE value="Adds HypNet and Unet for hyp selection" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds HypNet and Unet for hyp selection" />
+    <MESSAGE value="Adds small tweaks to utils" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds small tweaks to utils" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583755604639">
@@ -486,6 +488,16 @@
           <line>52</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/EnsambleModel.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/EnsambleModel.py</url>
+          <line>62</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
         <breakpoint type="python-exception">
           <properties notifyOnlyOnFirst="true" notifyOnTerminate="true" exception="builtins.RuntimeWarning">
             <option name="notifyOnTerminate" value="true" />
@@ -505,7 +517,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1584614159291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1585051767503" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1585310304902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminantConv$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1583760427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel__1_.coverage" NAME="SegmentationModel (1) Coverage Results" MODIFIED="1584096648050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1585088388650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

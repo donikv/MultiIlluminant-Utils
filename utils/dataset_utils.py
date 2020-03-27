@@ -47,8 +47,8 @@ def mask_to_image(t: np.ndarray):
 
 def transform_from_log(img: np.ndarray):
     def trans(log_pixel):
-        z = np.sqrt(np.exp(- log_pixel[0])**2 + np.exp(- log_pixel[1])**2 + 1)
-        return np.array([np.exp(- log_pixel[0])/z, 1/z, np.exp(- log_pixel[1])/z])
+        z = np.sqrt(log_pixel[0]**2 + log_pixel[1]**2 + 1)
+        return np.array([log_pixel[0]/z, 1/z, log_pixel[1]/z])
     img_log = np.array([[trans(pixel) for pixel in row] for row in img])
     return img_log
 

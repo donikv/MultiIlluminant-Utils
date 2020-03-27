@@ -52,9 +52,9 @@ def color_correct_tensor(img, canonical_ill, unknown_ill=None):
 def transform_to_log(img: np.ndarray):
     def trans(pixel):
         g = 1 if pixel[1] == 0 else pixel[1]
-        b = 0.01 if pixel[2] == 0 else pixel[2]
-        r = 0.01 if pixel[0] == 0 else pixel[0]
-        return np.log(np.array([r/g, b/g]))
+        # b = 0.01 if pixel[2] == 0 else pixel[2]
+        # r = 0.01 if pixel[0] == 0 else pixel[0]
+        return np.array([pixel[0]/g, pixel[2]/g])
     img_log = np.array(
         [[trans(pixel) for pixel in row] for row in
          img])

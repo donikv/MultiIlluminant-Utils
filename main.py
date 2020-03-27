@@ -31,7 +31,7 @@ def test_model(path, images_path):
 
 def test_hyp_sel(paths, images_path, use_log=False):
     in_channels = 2 if use_log else 3
-    dataset = MIDataset(datatype='test', folder='dataset_crf/lab', special_folder=images_path,
+    dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
                         transforms=get_validation_augmentation(), use_mask=True)
 
     loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=0)
@@ -51,7 +51,7 @@ def test_hyp_sel(paths, images_path, use_log=False):
         gt = gt / 255
         for img, gti in zip(data, gt):
             final = selNet.test(model, img, gti, patch_height_ratio, patch_width_ratio)
-            visualize_tensor(img.cpu(), gti, final.cpu())
+            visualize_tensor(img.cpu(), gti, final.cpu().type(torch.IntTensor))
         torch.cuda.empty_cache()
 
 
