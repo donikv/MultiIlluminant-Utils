@@ -25,19 +25,24 @@ class HypNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(),
         )
+
+        in_size = self.c2_out * 6 * 6
+
         self.branch_a = nn.Sequential(
-            nn.Linear(self.c2_out * 4 * 4, 120),
+            nn.Linear(in_size, 120),
             nn.ReLU(),
             nn.Linear(120, self.out_channels),
         )
         self.branch_b = nn.Sequential(
-            nn.Linear(self.c2_out * 4 * 4, 120),
+            nn.Linear(in_size, 120),
             nn.ReLU(),
             nn.Linear(120, self.out_channels),
         )
 
         for ap in self.branch_a.parameters():
-            ap.data = ap.data.normal_(-0.05, 0.25)
+            ap.data = ap.data.normal_(0.0, 0.5)
+        for ap in self.branch_b.parameters():
+            ap.data = ap.data.normal_(0.0, 0.5)
 
     def __num_flat_features(self, x):
         size = x.size()[1:]  # all dimensions except the batch dimension
@@ -61,6 +66,8 @@ class HypNet(nn.Module):
 
     @staticmethod
     def get_selection_class_per_patch(outa, outb, gt, loss):
+        if len(gt.shape) == 1:
+            gt = torch.stack([gt for i in range(outa.shape[0])])
         sels = []
         for pa, pb, gtp in zip(outa, outb, gt):
             la = loss(outa, gt)
@@ -101,16 +108,17 @@ class SelUnet(nn.Module):
     def forward(self, image):
         return self.model(image)
 
-    def select(self, hypNet: HypNet, image, gt, patch_height_ratio, patch_width_ratio, loss):
+    def select(self, hypNet: HypNet, image, gt, patch_height_ratio, patch_width_ratio, loss, is_gt_image=True):
         patches = get_patches_for_image(image, patch_height_ratio, patch_width_ratio)
-        gt = get_patches_for_image(gt, patch_height_ratio, patch_width_ratio).mean(2).mean(2)
-        p_mean = patches.mean(3, keepdim=True).mean(2, keepdim=True)
-        patches = patches - p_mean
-        p_s_mean = p_mean.squeeze().squeeze()
+        if is_gt_image:
+            gt = get_patches_for_image(gt, patch_height_ratio, patch_width_ratio).mean(2).mean(2)
+        # p_mean = patches.mean(3, keepdim=True).mean(2, keepdim=True)
+        # patches = patches - p_mean
+        # p_s_mean = p_mean.squeeze().squeeze()
         out_a, out_b = hypNet(patches)
-        out_a += p_s_mean
-        out_b += p_s_mean
-        sel = torch.stack(hypNet.get_selection_class_per_patch(out_a, out_b, gt - p_mean, loss))
+        # out_a += p_s_mean
+        # out_b += p_s_mean
+        sel = torch.stack(hypNet.get_selection_class_per_patch(out_a, out_b, gt, loss)) # gt - p_mean
 
         sel_img = combine_patches_into_image(sel, patch_height_ratio, patch_width_ratio).transpose(0, 1).transpose(0, 2)
         _, image_height, image_width = image.shape
@@ -121,14 +129,14 @@ class SelUnet(nn.Module):
 
     def test(self, hypNet: HypNet, image, gt, patch_height_ratio, patch_width_ratio):
         patches = get_patches_for_image(image, patch_height_ratio, patch_width_ratio)
-        p_mean = patches.mean(3, keepdim=True).mean(2, keepdim=True)
-        patches = patches - p_mean
-        p_s_mean = p_mean.squeeze().squeeze()
+        # p_mean = patches.mean(3, keepdim=True).mean(2, keepdim=True)
+        # patches = patches - p_mean
+        # p_s_mean = p_mean.squeeze().squeeze()
         out_a, out_b = hypNet(patches)
-        out_a += p_s_mean
-        out_b += p_s_mean
+        # out_a += p_s_mean
+        # out_b += p_s_mean
         sel_a = combine_patches_into_image(out_a, patch_height_ratio, patch_width_ratio).transpose(0, 1).transpose(0, 2)
-        sel_b = combine_patches_into_image(out_a, patch_height_ratio, patch_width_ratio).transpose(0, 1).transpose(0, 2)
+        sel_b = combine_patches_into_image(out_b, patch_height_ratio, patch_width_ratio).transpose(0, 1).transpose(0, 2)
         _, image_height, image_width = image.shape
         _, sel_img_height, sel_img_width = sel_a.shape
         sel_a = F.pad(sel_a, [0, image_width - sel_img_width, 0, image_height - sel_img_height],

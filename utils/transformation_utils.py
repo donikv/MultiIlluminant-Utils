@@ -23,6 +23,11 @@ def color_correct(img, canonical_ill, unknown_ill=None):
     torch.cat(trans_img, out=b)
     return trans_img
 
+def color_correct_fast(img, u_ill, c_ill=1/3.):
+    def correct_pixel(p, ill):
+        return np.multiply(p, ill)
+    return np.array([np.array([correct_pixel(p, c_ill/u_ill) for p in row]) for row in img])
+
 
 def color_correct_with_mask(img, mask, c1, c2):
     mask = to_np_img(mask)

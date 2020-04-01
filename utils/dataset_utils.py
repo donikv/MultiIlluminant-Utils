@@ -8,7 +8,7 @@ import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 
 
-def load_img_and_gt(x, path='./data', folder='dataset_crf/lab', use_mask=True):
+def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True):
     """
     Return image based on image name and folder.
     """
@@ -28,6 +28,11 @@ def load_img_and_gt(x, path='./data', folder='dataset_crf/lab', use_mask=True):
     mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
     return img, gt, mask
 
+def load_img_hdr_dataset(image_name, image_path):
+    image_path = os.path.join(image_path, image_name)
+    img = cv2.imread(image_path, cv2.IMREAD_ANYDEPTH)
+    img2 = img.astype(float)
+    return img2
 
 def to_np_img(t: torch.tensor):
     if len(t.shape) == 4:
@@ -63,8 +68,8 @@ def log_to_image(t: np.ndarray):
 
 def visualize_tensor(image, p_mask, mask, transformed_image=None):
     t_image = to_np_img(transformed_image) if transformed_image is not None else None
-    visualize(log_to_image(to_np_img(image)).astype(int), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
-              log_to_image(transformed_image))
+    visualize(log_to_image(to_np_img(image)), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
+              log_to_image(t_image))
 
 
 def visualize(image, gt, mask, transformed_image=None):
@@ -150,7 +155,7 @@ def get_patch_with_index(image, idx, patch_height_ratio, patch_width_ratio):
     def get_patch(img, py, px, phr, pwr, ih, iw):
         y = int(ih * phr)
         x = int(iw * pwr)
-        return img[py:py + int(ih * phr)][px:px + int(iw * pwr)][:]
+        return img[py:py + int(ih * phr), px:px + int(iw * pwr), :]
 
     return get_patch(image, patch_y, patch_x, patch_height_ratio, patch_width_ratio, image_height,
                      image_width)

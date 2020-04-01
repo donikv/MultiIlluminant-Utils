@@ -8,7 +8,7 @@ from albumentations import pytorch as AT
 from torch.utils.data import Dataset
 import numpy as np
 
-from dataset_utils import load_img_and_gt, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index
+from dataset_utils import load_img_and_gt_crf_dataset, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index
 from transformation_utils import transform_to_log
 
 
@@ -39,7 +39,7 @@ class MIDataset(Dataset):
 
     def __getitem__(self, idx):
         image_name = self.image_names[idx]
-        image, gt, mask = load_img_and_gt(image_name, self.path, self.folder, use_mask=self.use_mask)
+        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask)
         if self.log_transform:
             image = transform_to_log(image)
             gt = transform_to_log(gt)
@@ -56,14 +56,8 @@ class MIDataset(Dataset):
             preprocessed = self.preprocessing(image=img, mask=gt)
             gt = preprocessed['mask']
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
-        # mask = np.apply_along_axis(lambda x: x[], 2, mask)
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         mask = np.array([[(np.array([1, 0]) if pixel[0] > 128 else np.array([0, 1])) for pixel in row] for row in mask])
-        # mask = get_mask_from_gt(gt)
-        # name = f"{self.path}/{self.folder}/gt_mask/{image_name}"
-        # print(mask)
-        # print(name)
-        # cv2.imwrite(name, mask_to_image(mask))
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         return img, \
                mask, \
@@ -89,15 +83,16 @@ class MIPatchedDataset(MIDataset):
     def __getitem__(self, idx):
         patches_per_img = ceil(1 / (self.patch_height_ratio * self.patch_width_ratio))
         image_idx = int(idx / patches_per_img)
+        patch_idx = idx % patches_per_img
         image_name = self.image_names[image_idx]
-        image, gt, mask = load_img_and_gt(image_name, self.path, self.folder, use_mask=self.use_mask)
+        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask)
         if self.log_transform:
             image = transform_to_log(image)
             gt = transform_to_log(gt)
 
-        image = get_patch_with_index(image, image_idx, self.patch_height_ratio, self.patch_width_ratio)
-        mask = get_patch_with_index(mask, image_idx, self.patch_height_ratio, self.patch_width_ratio)
-        gt = get_patch_with_index(gt, image_idx, self.patch_height_ratio, self.patch_width_ratio)
+        image = get_patch_with_index(image, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
+        mask = get_patch_with_index(mask, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
+        gt = get_patch_with_index(gt, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
 
         augmented = self.transforms(image=image, mask=mask)
         img = augmented['image']
