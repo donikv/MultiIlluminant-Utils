@@ -50,12 +50,15 @@ def mask_to_image(t: np.ndarray):
          t])
 
 
-def transform_from_log(img: np.ndarray):
-    def trans(log_pixel):
-        z = np.sqrt(log_pixel[0]**2 + log_pixel[1]**2 + 1)
-        return np.array([log_pixel[0]/z, 1/z, log_pixel[1]/z])
-    img_log = np.array([[trans(pixel) for pixel in row] for row in img])
-    return img_log
+def transform_from_log(log, g):
+    log_rg, log_bg = cv2.split(log)
+    n_r_2 = np.ma.exp(log_rg)
+    n_b_2 = np.ma.exp(log_bg)
+    r2 = np.ma.multiply(n_r_2, g)
+    b2 = np.ma.multiply(n_b_2, g)
+    r2, b2 = np.ma.filled(r2, 0), np.ma.filled(b2, 0)
+    img = np.dstack((r2, g, b2))
+    return img
 
 
 def log_to_image(t: np.ndarray):
@@ -68,7 +71,7 @@ def log_to_image(t: np.ndarray):
 
 def visualize_tensor(image, p_mask, mask, transformed_image=None):
     t_image = to_np_img(transformed_image) if transformed_image is not None else None
-    visualize(log_to_image(to_np_img(image)), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
+    visualize(log_to_image(to_np_img(image)), log_to_image(to_np_img(p_mask)), log_to_image(to_np_img(mask)),
               log_to_image(t_image))
 
 

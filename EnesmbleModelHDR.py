@@ -11,10 +11,11 @@ from Dataset import MIDataset, MIPatchedDataset
 from HDRDataset import HDRDataset, HDRPatchedDataset
 from Losses import BCEDiceLoss, angular_loss
 from Models import get_model
-from dataset_utils import visualize_tensor
+from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+import numpy as np
 
-use_log = False
+use_log = True
 in_channels = 2 if use_log else 3
 patch_size = 64
 
@@ -51,48 +52,37 @@ criterion1 = torch.nn.MSELoss()
 
 # -- TRAINING --
 
+def plot(data, gt, out_a, out_b, gs, gt_gs):
+    gs = gs[0]
+    gt_gs = np.array([[np.array(gt_gs[0]) for i in range(44)] for j in range(44)])
+    d = to_np_img(data[0])
+    d = transform_from_log(d, gs)
+    gt_img = np.array([[np.array(gt[0].cpu()) for i in range(44)] for j in range(44)])
+    gt_img = transform_from_log(gt_img, gt_gs)
+    preda_img = np.array([[out_a[0].detach().cpu().numpy() for i in range(44)] for j in range(44)])
+    preda_img = transform_from_log(preda_img, gt_gs)
+    predb_img = np.array([[out_b[0].detach().cpu().numpy() for i in range(44)] for j in range(44)])
+    predb_img = transform_from_log(predb_img, gt_gs)
+    visualize(d, gt_img, preda_img, predb_img)
+
 for epoch in range(num_epochs):
-    for batch_idx, (data, gt) in enumerate(train_loader):
-        d_mean = data.mean(3, keepdim=True).mean(2, keepdim=True)
-        d_o = data.detach()
-        # data = data - d_mean
-        # d_mean = d_mean.squeeze().squeeze()
-        # gt -= d_mean
+    for batch_idx, (data, gt, gs, gt_gs) in enumerate(train_loader):
         out_a, out_b = model(data)
         _, loss, loss_b = model.back_pass(out_a, out_b, gt, optimizer, criterion1, batch_idx < 100 and epoch == 0)
-        # out_a += d_mean
-        # out_b += d_mean
-        # gt += d_mean
         if batch_idx % 1000 == 0:
-            gt_img = torch.stack([torch.stack([gt[0] for i in range(44)]) for j in range(44)])
-            preda_img = torch.stack([torch.stack([out_a[0] for i in range(44)]) for j in range(44)])
-            predb_img = torch.stack([torch.stack([out_b[0] for i in range(44)]) for j in range(44)])
-            visualize_tensor(d_o[0], gt_img.cpu().detach(), preda_img.cpu().detach(), predb_img.cpu().detach())
+            plot(data, gt, out_a, out_b, gs, gt_gs)
         if batch_idx % log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLossA: {:.6f} \t LossB: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), loss.item(), loss_b.item()))
         torch.cuda.empty_cache()
-    for batch_idx, (data, gt) in enumerate(valid_loader):
+    for batch_idx, (data, gt, gs, gt_gs) in enumerate(valid_loader):
         if batch_idx > 1:
             break
-        d_mean = data.mean(3, keepdim=True).mean(2, keepdim=True)
-        # d_o = data.detach()
-        # data = data - d_mean
-        # d_mean = d_mean.squeeze().squeeze()
-        # gt -= d_mean
         out_a, out_b = model(data)
         _, loss, loss_b = model.get_selection_class(out_a, out_b, gt, criterion1)
-        # out_a += d_mean
-        # out_b += d_mean
-        # gt += d_mean
-        if batch_idx == 0:
-            gt_img = torch.stack([torch.stack([gt[0] for i in range(44)]) for j in range(44)])
-            preda_img = torch.stack([torch.stack([out_a[0] for i in range(44)]) for j in range(44)])
-            predb_img = torch.stack([torch.stack([out_b[0] for i in range(44)]) for j in range(44)])
-            visualize_tensor(data[0], gt_img.cpu().detach(), preda_img.cpu().detach(), predb_img.cpu().detach())
-        if batch_idx == 0:
-            print(gt - out_a, gt - out_b)
+        if batch_idx % 1000 == 0:
+            plot(data, gt, out_a, out_b, gs, gt_gs)
         if batch_idx % log_interval == 0:
             print('Valid Epoch: {} [{}/{} ({:.0f}%)]\tLossA: {:.6f} \t LossB: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(valid_loader.dataset),
@@ -128,6 +118,8 @@ patch_height_ratio = patch_size / 320.
 
 for epoch in range(num_epochs):
     for batch_idx, (data, gt) in enumerate(train_loader):
+        if batch_idx > 1:
+            break
         cum_loss = 0
         for img, gti in zip(data, gt):
             sel, sel_gt = selNet.select(model, img, gti, patch_height_ratio, patch_width_ratio, criterion1, is_gt_image=False)
