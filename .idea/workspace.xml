@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/log_chromaticity.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EnesmbleModelHDR.py" beforeDir="false" afterPath="$PROJECT_DIR$/EnesmbleModelHDR.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_hdr.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_hdr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/HDRDataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/HDRDataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
@@ -82,9 +78,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -297,7 +290,7 @@
       <workItem from="1585652898179" duration="8342000" />
       <workItem from="1585728409562" duration="7630000" />
       <workItem from="1585814822205" duration="11035000" />
-      <workItem from="1585988462218" duration="96000" />
+      <workItem from="1585988462218" duration="2905000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -376,7 +369,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585731094065</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Adds log transform">
+      <created>1585988569056</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1585988569056</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -415,7 +415,8 @@
     <MESSAGE value="Adds small tweaks to utils" />
     <MESSAGE value="Adds image preprocessing" />
     <MESSAGE value="Adds hdr image loading and hdr ensemble model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds hdr image loading and hdr ensemble model" />
+    <MESSAGE value="Adds log transform" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds log transform" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" />

@@ -1,3 +1,4 @@
+import cv2
 import segmentation_models_pytorch as smp
 import torch
 
@@ -16,10 +17,12 @@ from transformation_utils import get_training_augmentation, get_preprocessing, g
 import numpy as np
 
 use_log = True
-in_channels = 2 if use_log else 3
+out_channels = 2 if use_log else 3
 patch_size = 64
+known_ills = True
+in_channels = out_channels*3 if known_ills else out_channels
 
-model = HypNet.HypNet(patch_height=patch_size, patch_width=patch_size, in_channels=in_channels, out_channels=in_channels)
+model = HypNet.HypNet(patch_height=patch_size, patch_width=patch_size, in_channels=in_channels, out_channels=out_channels)
 model.cuda(0)
 
 num_workers = 0
@@ -28,10 +31,10 @@ bs = 1
 
 train_dataset = HDRPatchedDataset(datatype='train',
                                  transforms=get_training_augmentation(patch_size, patch_size),
-                                 log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                                 log_transform=use_log, illumination_known=known_ills)  # , preprocessing=get_preprocessing(preprocessing_fn))
 valid_dataset = HDRPatchedDataset(datatype='valid',
                                  transforms=get_validation_augmentation(patch_size, patch_size),
-                                 log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
+                                 log_transform=use_log, illumination_known=known_ills)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
 train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
 valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
@@ -56,6 +59,8 @@ def plot(data, gt, out_a, out_b, gs, gt_gs):
     gs = gs[0]
     gt_gs = np.array([[np.array(gt_gs[0]) for i in range(44)] for j in range(44)])
     d = to_np_img(data[0])
+    d = cv2.split(d)
+    d = np.dstack((d[0], d[1]))
     d = transform_from_log(d, gs)
     gt_img = np.array([[np.array(gt[0].cpu()) for i in range(44)] for j in range(44)])
     gt_img = transform_from_log(gt_img, gt_gs)
