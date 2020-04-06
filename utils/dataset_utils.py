@@ -8,11 +8,13 @@ import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 
 
-def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True):
+def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False):
     """
     Return image based on image name and folder.
     """
     images_data_folder = f"{path}/{folder}/srgb8bit"
+    if use_corrected:
+        images_data_folder = f"{path}/{folder}/img_corrected_1"
     gt_data_folder = f"{path}/{folder}/groundtruth"
     mask_data_folder = f"{path}/{folder}/gt_mask"
     if use_mask:
