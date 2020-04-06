@@ -10,22 +10,41 @@ from Models import get_model
 from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor
 from transformation_utils import color_correct, color_correct_tensor, get_training_augmentation, \
     get_validation_augmentation, color_correct_with_mask, to_tensor
+from SegmentationModel import plot
+import Losses as ls
+import numpy as np
+import cv2
 
 
 def test_model(path, images_path):
+    use_corrected = False
     model, _ = get_model(num_classes=2)
     model.eval()
-    dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path, transforms=get_validation_augmentation(), use_mask=True)
-    #dataset = MIDataset(datatype='test', folder='dataset_crf/valid', transforms=get_validation_augmentation(), use_mask=True)
+    dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
+                        transforms=get_validation_augmentation(), use_mask=False, use_corrected=use_corrected)
     loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=0)
     model.load_state_dict(torch.load(path))
+    dl = ls.DiceLoss()
+
+    def dice(x, y):
+        return 1 - dl(x, y)
 
     for batch_idx, (data, mask, gt) in enumerate(loader):
+        data, gs = data
+        gt, gt_gs = gt
         p_mask, label = model(data)
-        visualize_tensor(data, mask, p_mask)
-        _, _, center = cluster(gt.cpu())
-        cimg = color_correct_with_mask(data, p_mask, center[0], center[1])
-        visualize_tensor(data.cpu(), gt, p_mask, cimg)
+        print(dice(mask, p_mask))
+        _, _, center = cluster(gt.cpu(), draw=False)
+        if use_corrected:
+            center[1] = center[1] / center[0]
+            center[0] = np.array([255, 255, 255])
+
+        def filter(img):
+            return cv2.GaussianBlur(img, (5, 5), 0)
+
+        cimg = color_correct_with_mask(data, p_mask, center[1], center[0])
+        plot(data, gs, mask, p_mask, False)
+        visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu().type(torch.IntTensor), p_mask, cimg)
         input("Press Enter to continue...")
 
 
@@ -60,7 +79,6 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
     dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
                         transforms=get_validation_augmentation(), use_mask=True)
 
-
     loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=0)
 
     model = HypNet.HypNet(patch_height=44, patch_width=44, in_channels=in_channels, out_channels=in_channels)
@@ -84,11 +102,10 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
         torch.cuda.empty_cache()
 
 
-
-#test_model('./models/unet-efficientnet-b0-gt', 'special')
-test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
-#exit(0)
-#img, mask, gt = load_img_and_gt('bmug_b_r.png')
+test_model('./models/unet-efficientnet-b0-gt-best-valid2', '')
+# test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
+# exit(0)
+# img, mask, gt = load_img_and_gt('bmug_b_r.png')
 # print(img-gt)
 # print(gt.shape)
 dataset = MIPatchedDataset(datatype='train', transforms=get_training_augmentation(), use_mask=True)

@@ -30,8 +30,9 @@ def color_correct_fast(img, u_ill, c_ill=1 / 3.):
     return np.array([np.array([correct_pixel(p, c_ill / u_ill) for p in row]) for row in img])
 
 
-def color_correct_with_mask(img, mask, c1, c2):
+def color_correct_with_mask(img, mask, c1, c2, filter=lambda x: x):
     mask = to_np_img(mask)
+    mask = filter(mask)
     # c1 = torch.tensor(c1)
     # c2 = torch.tensor(c2)
     gt = np.array(
@@ -49,7 +50,7 @@ def color_correct_tensor(img, canonical_ill, unknown_ill=None):
 
     for row_idx in range(canonical_ill.shape[0]):
         for pixel_idx in range(canonical_ill[row_idx].shape[0]):
-            delta = torch.diag(1 / canonical_ill[row_idx][pixel_idx])
+            delta = torch.diag(1 / canonical_ill[row_idx][pixel_idx] / 3)
             deltas[row_idx][pixel_idx] = delta
     return (deltas @ img.transpose(2, 0).transpose(1, 0).unsqueeze(-1)).squeeze()
 

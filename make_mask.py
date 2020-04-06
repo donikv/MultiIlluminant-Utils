@@ -28,13 +28,17 @@ def create_corrected_image(img: np.ndarray, gt: np.ndarray, mask: np.ndarray):
     return corrected
 
 if __name__ == '__main__':
-
+    make_mask = True
     path = './data'
-    folder = 'dataset_crf/valid'
+    folder = 'dataset_crf/realworld'
     special_folder = ''
     image_names = os.listdir(f"{path}/{folder}/srgb8bit/{special_folder}")
     for name in image_names:
-        image, gt, mask = du.load_img_and_gt_crf_dataset(name, path, folder, use_mask=False)
+        image, gt, mask = du.load_img_and_gt_crf_dataset(name, path, folder, use_mask=True)
+        if make_mask:
+            filename = f"{path}/{folder}/gt_mask/{name}"
+            mask = du.mask_to_image(du.get_mask_from_gt(gt))
+            cv2.imwrite(filename, mask)
         corrected = create_corrected_image(image, gt, mask).astype(int)
         du.visualize(image, gt, mask, corrected)
         r,g,b = cv2.split(corrected)

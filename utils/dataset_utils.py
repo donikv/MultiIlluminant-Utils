@@ -71,13 +71,13 @@ def log_to_image(t: np.ndarray):
     return transform_from_log(t)
 
 
-def visualize_tensor(image, p_mask, mask, transformed_image=None):
+def visualize_tensor(image, p_mask, mask, transformed_image=None, custom_transform=lambda x: x):
     t_image = to_np_img(transformed_image) if transformed_image is not None else None
-    visualize(log_to_image(to_np_img(image)), log_to_image(to_np_img(p_mask)), log_to_image(to_np_img(mask)),
-              log_to_image(t_image))
+    visualize(to_np_img(image), mask_to_image(to_np_img(p_mask)), mask_to_image(to_np_img(mask)),
+              t_image, custom_transform)
 
 
-def visualize(image, gt, mask, transformed_image=None):
+def visualize(image, gt, mask, transformed_image=None, custom_transform=lambda x: x):
     """
     Plot image and masks.
     If two pairs of images and masks are passes, show both.
@@ -86,20 +86,21 @@ def visualize(image, gt, mask, transformed_image=None):
     if transformed_image is None:
         f, ax = plt.subplots(2, 2, figsize=(30, 30))
 
-        ax[0][0].imshow(image)
-        ax[0][1].imshow(mask)
-        ax[1][0].imshow(gt)
+        ax[0][0].imshow(custom_transform(image))
+        ax[0][1].imshow(custom_transform(mask))
+        ax[1][0].imshow(custom_transform(gt))
     else:
         f, ax = plt.subplots(2, 2, figsize=(30, 30))
-        ax[1][1].imshow(transformed_image)
-        ax[1][0].imshow(gt)
-        ax[0][0].imshow(image)
-        ax[0][1].imshow(mask)
+        ax[1][1].imshow(custom_transform(transformed_image))
+        ax[1][0].imshow(custom_transform(gt))
+        ax[0][0].imshow(custom_transform(image))
+        ax[0][1].imshow(custom_transform(mask))
     plt.show()
 
 
 def get_mask_from_gt(gt):
-    gt = gt.cpu()
+    if type(gt) is not np.ndarray:
+        gt = gt.cpu()
     _, _, centers = cluster(gt, draw=False)
     mask = np.array([[(np.array([1, 0]) if np.linalg.norm(pixel - centers[0]) > np.linalg.norm(
         pixel - centers[1]) else np.array([0, 1])) for pixel in row] for row in gt])
