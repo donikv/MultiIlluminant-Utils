@@ -4,14 +4,13 @@
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SegmentationModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/SegmentationModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/make_mask.py" beforeDir="false" afterPath="$PROJECT_DIR$/make_mask.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -65,7 +64,19 @@
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.MultiIlluminantConv">
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.SegmentationModel">
     <configuration name="EnesmbleModelHDR" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -114,6 +125,9 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -133,9 +147,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -286,6 +297,8 @@
       <workItem from="1586157380354" duration="11393000" />
       <workItem from="1586177873988" duration="932000" />
       <workItem from="1586180490873" duration="2605000" />
+      <workItem from="1586200679167" duration="1884000" />
+      <workItem from="1586243507373" duration="956000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -436,9 +449,11 @@
     <state x="377" y="273" key="#xdebugger.XInspectDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1586181792108" />
     <state x="1235" y="153" key="#xdebugger.evaluate" timestamp="1586181792108" />
     <state x="1235" y="153" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1586181792108" />
-    <state x="491" y="9" key="CommitChangelistDialog2" timestamp="1586181792108" />
+    <state x="491" y="9" key="CommitChangelistDialog2" timestamp="1586183109750">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
     <state x="393" y="7" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1586181792108" />
-    <state x="491" y="9" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1586181792108" />
+    <state x="491" y="9" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1586183109750" />
     <state x="92" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1586181792108" />
     <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1586181792108" />
     <state x="697" y="255" width="515" height="549" key="EnvironmentVariablesDialog" timestamp="1586181792108" />
@@ -497,8 +512,10 @@
     <state x="449" y="161" width="1022" height="737" key="SettingsEditor/0.27.1920.999@0.27.1920.999" timestamp="1586181792108" />
     <state width="498" height="446" key="SwitcherDM" timestamp="1586181792108" />
     <state width="498" height="446" key="SwitcherDM/0.27.1920.999@0.27.1920.999" timestamp="1586181792108" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1586181792108" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1586181792108" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1586183114145">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1586183114145" />
     <state x="481" y="234" width="947" height="591" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1586181792108" />
     <state x="481" y="234" width="947" height="591" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.27.1920.999@0.27.1920.999" timestamp="1586181792108" />
     <state x="616" y="341" key="com.intellij.ide.util.TipDialog" timestamp="1586181792108" />
@@ -570,16 +587,16 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1585310304902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$log_chromaticity.coverage" NAME="log_chromaticity Coverage Results" MODIFIED="1585817165541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1584614159291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel__1_.coverage" NAME="SegmentationModel (1) Coverage Results" MODIFIED="1584096648050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1586021019768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_hdr.coverage" NAME="load_hdr Coverage Results" MODIFIED="1585732449275" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1584614159291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1585310304902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminantConv$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1583760427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1586024453001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnesmbleModelHDR.coverage" NAME="EnesmbleModelHDR Coverage Results" MODIFIED="1585827724969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_mat.coverage" NAME="load_mat Coverage Results" MODIFIED="1585325685325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1586182817900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel__1_.coverage" NAME="SegmentationModel (1) Coverage Results" MODIFIED="1584096648050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnesmbleModelHDR.coverage" NAME="EnesmbleModelHDR Coverage Results" MODIFIED="1585827724969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1586021019768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1586024453001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1586178809056" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$log_chromaticity.coverage" NAME="log_chromaticity Coverage Results" MODIFIED="1585817165541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

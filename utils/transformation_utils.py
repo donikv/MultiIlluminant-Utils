@@ -107,9 +107,9 @@ def get_training_augmentation(x: int = 320, y: int = 640):
     train_transform = [
         albu.HorizontalFlip(p=0.5),
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=0.5, border_mode=0),
-        # albu.RandomGamma(p=0.75),
+        albu.RandomGamma(p=0.75),
         albu.GridDistortion(p=0.25),
-        # albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
+        albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
         albu.Resize(x, y),
         # albu.Normalize(always_apply=True),
     ]

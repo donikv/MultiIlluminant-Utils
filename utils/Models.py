@@ -2,11 +2,11 @@ import segmentation_models_pytorch as smp
 
 
 def get_model(num_classes=2):
-    ENCODER = 'efficientnet-b0'
+    ENCODER = 'resnet50'
     ENCODER_WEIGHTS = 'imagenet'
     DEVICE = 'cuda'
 
-    ACTIVATION = None
+    ACTIVATION = 'sigmoid'
     aux_params = dict(
         pooling='max',  # one of 'avg', 'max'
         dropout=0.5,  # dropout ratio, default is None

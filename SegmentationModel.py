@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     # model, criterion, optimizer
     optimizer = torch.optim.Adam([
-        {'params': model.decoder.parameters(), 'lr': 1e-2},
+        {'params': model.decoder.parameters(), 'lr': 5e-3},
         {'params': model.encoder.parameters(), 'lr': 1e-3},
     ])
     scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
