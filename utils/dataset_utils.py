@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
-
+from kmodes.kmodes import KModes
 
 def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False):
     """
@@ -47,8 +47,9 @@ def to_np_img(t: torch.tensor):
 def mask_to_image(t: np.ndarray):
     if t.shape[-1] == 3:
         return t
+    t = t / t.max()
     return np.array(
-        [[(np.array([255, 255, 255]) if pixel[0] < pixel[1] else np.array([0, 0, 0])) for pixel in row] for row in
+        [[(np.array([255, 255, 255]) if pixel[0] > 0.5 else np.array([0, 0, 0])) for pixel in row] for row in
          t])
 
 
@@ -102,8 +103,8 @@ def get_mask_from_gt(gt):
     if type(gt) is not np.ndarray:
         gt = gt.cpu()
     _, _, centers = cluster(gt, draw=False)
-    mask = np.array([[(np.array([1, 0]) if np.linalg.norm(pixel - centers[0]) > np.linalg.norm(
-        pixel - centers[1]) else np.array([0, 1])) for pixel in row] for row in gt])
+    mask = np.array([[(np.array([1]) if np.linalg.norm(pixel - centers[0]) > np.linalg.norm(
+        pixel - centers[1]) else np.array([0])) for pixel in row] for row in gt])
     return mask
 
 
@@ -113,7 +114,8 @@ def calculate_histogram(img: np.ndarray):
     return list(map(hist, channels))
 
 
-def cluster(img: np.ndarray, draw=True):
+def prep_img_for_clustering(img: np.ndarray):
+    img = to_np_img(img)
     Z = img.reshape((-1, 3))
 
     # convert to np.float32
@@ -122,6 +124,11 @@ def cluster(img: np.ndarray, draw=True):
     mask = np.array(list(map(lambda x: x.all(), mask)))
     # print(mask)
     Z = Z[mask]
+    return Z
+
+
+def cluster(img: np.ndarray, draw=True):
+    Z = prep_img_for_clustering(img)
 
     # define criteria, number of clusters(K) and apply kmeans()
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -142,6 +149,19 @@ def cluster(img: np.ndarray, draw=True):
         plt.show()
     return ret, label, center
 
+
+def get_center_colors(gt: torch.Tensor, mask: torch.Tensor):
+    mask = to_np_img(mask)
+    gt = to_np_img(gt).reshape((-1, 3))
+    mask = mask.reshape((-1, 1))
+    gt = gt.reshape((-1, 3))
+    A = gt[mask.ravel() == 0]
+    B = gt[mask.ravel() == 1]
+
+    A = A.mean(0)
+    B = B.mean(0)
+
+    return [A, B]
 
 def plot_histograms(hists):
     f, ax = plt.subplots(len(hists), 1, figsize=(50, 50))

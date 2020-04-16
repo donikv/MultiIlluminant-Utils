@@ -59,7 +59,7 @@ class MIDataset(Dataset):
             gt = preprocessed['mask']
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
-        mask = np.array([[(np.array([1, 0]) if pixel[0] > 128 else np.array([0, 1])) for pixel in row] for row in mask])
+        mask = np.array([[(np.array([1]) if pixel[0] > 128 else np.array([0])) for pixel in row] for row in mask])
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         return (img, gs), \
                mask, \

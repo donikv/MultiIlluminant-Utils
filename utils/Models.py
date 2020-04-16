@@ -2,7 +2,7 @@ import segmentation_models_pytorch as smp
 
 
 def get_model(num_classes=2):
-    ENCODER = 'resnet50'
+    ENCODER = 'efficientnet-b2'
     ENCODER_WEIGHTS = 'imagenet'
     DEVICE = 'cuda'
 

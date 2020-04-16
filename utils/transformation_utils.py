@@ -25,19 +25,23 @@ def color_correct(img, canonical_ill, unknown_ill=None):
 
 def color_correct_fast(img, u_ill, c_ill=1 / 3.):
     def correct_pixel(p, ill):
-        return np.multiply(p, ill)
+        return np.clip(np.multiply(p, ill), a_min=0, a_max=255)
 
     return np.array([np.array([correct_pixel(p, c_ill / u_ill) for p in row]) for row in img])
 
 
 def color_correct_with_mask(img, mask, c1, c2, filter=lambda x: x):
     mask = to_np_img(mask)
-    mask = filter(mask)
+    mask = mask / (np.max(mask))
     # c1 = torch.tensor(c1)
     # c2 = torch.tensor(c2)
+    # gt = np.array(
+    #     [[c2 * pixel[0] + c1 * (1 - pixel[0]) for pixel in row] for row in mask])
     gt = np.array(
-        [[c1 if pixel[0] < pixel[1] else c2 for pixel in row] for row in mask])
-    return color_correct_tensor(img[0], torch.tensor(gt))
+        [[c1 if pixel[0] < 0.5 else c2 for pixel in row] for row in mask])
+    gt = filter(gt)
+    gt = torch.tensor(gt)
+    return color_correct_tensor(img[0], gt), gt
 
 
 def color_correct_tensor(img, canonical_ill, unknown_ill=None):

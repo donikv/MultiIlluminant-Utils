@@ -1,3 +1,4 @@
+kmodes
 albumentations
 matplotlib
 wxPython

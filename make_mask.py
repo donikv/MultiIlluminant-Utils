@@ -28,7 +28,7 @@ def create_corrected_image(img: np.ndarray, gt: np.ndarray, mask: np.ndarray):
     return corrected
 
 if __name__ == '__main__':
-    make_mask = True
+    make_mask = False
     path = './data'
     folder = 'dataset_crf/realworld'
     special_folder = ''

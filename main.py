@@ -7,7 +7,8 @@ from Dataset import MIDataset, MIPatchedDataset
 from torch.utils.data.dataloader import DataLoader
 
 from Models import get_model
-from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor
+from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor, \
+    get_center_colors
 from transformation_utils import color_correct, color_correct_tensor, get_training_augmentation, \
     get_validation_augmentation, color_correct_with_mask, to_tensor
 from SegmentationModel import plot
@@ -18,7 +19,7 @@ import cv2
 
 def test_model(path, images_path):
     use_corrected = False
-    model, _ = get_model(num_classes=2)
+    model, _ = get_model(num_classes=1)
     model.eval()
     dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
                         transforms=get_validation_augmentation(), use_mask=False, use_corrected=use_corrected)
@@ -34,18 +35,29 @@ def test_model(path, images_path):
         gt, gt_gs = gt
         p_mask, label = model(data)
         print(dice(mask, p_mask))
-        _, _, center = cluster(gt.cpu(), draw=False)
+        center = get_center_colors(gt.cpu(), mask.cpu())
         if use_corrected:
-            center[1] = center[1] / center[0]
-            center[0] = np.array([255, 255, 255])
+            center[1] = center[1] / center[0] / 3
+            center[0] = np.array([1/3., 1/3., 1/3.])
 
         def filter(img):
-            return cv2.GaussianBlur(img, (5, 5), 0)
+            return cv2.GaussianBlur(img, (101, 101), 0)
 
-        cimg = color_correct_with_mask(data, p_mask, center[1], center[0])
+        cimg, gt_mask = color_correct_with_mask(data, p_mask, center[0], center[1], filter)
+        if use_corrected:
+            cimg = cimg.type(torch.IntTensor)
+        else:
+            gt_mask = gt_mask.type(torch.IntTensor)
         plot(data, gs, mask, p_mask, False)
-        visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu().type(torch.IntTensor), p_mask, cimg)
-        input("Press Enter to continue...")
+        visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu().type(torch.IntTensor), gt_mask, cimg)
+
+        cimg, gt_mask = color_correct_with_mask(data, p_mask, center[1], center[0], filter)
+        if use_corrected:
+            cimg = cimg.type(torch.IntTensor)
+        else:
+            gt_mask = gt_mask.type(torch.IntTensor)
+        visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu().type(torch.IntTensor), gt_mask, cimg)
+        # input("Press Enter to continue...")
 
 
 def test_hyp_sel(paths, images_path, use_log=False):
@@ -102,7 +114,7 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
         torch.cuda.empty_cache()
 
 
-test_model('./models/unet-efficientnet-b0-gt-best-valid2', '')
+test_model('./models/unet-efficientnet-b2-gt-best-valid-sig', '')
 # test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
 # exit(0)
 # img, mask, gt = load_img_and_gt('bmug_b_r.png')

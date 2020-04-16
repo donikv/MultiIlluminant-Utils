@@ -27,7 +27,7 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 
 if __name__ == '__main__':
 
-    model, preprocessing_fn = get_model(num_classes=2)
+    model, preprocessing_fn = get_model(num_classes=1)
 
     num_workers = 0
     bs = 4
@@ -95,4 +95,4 @@ if __name__ == '__main__':
             min_valid_loss = cum_loss
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
-            torch.save(model.state_dict(), './models/unet-efficientnet-b0-gt-best-valid2')
+            torch.save(model.state_dict(), './models/unet-efficientnet-b2-gt-best-valid-sig')
