@@ -1,4 +1,5 @@
 import segmentation_models_pytorch as smp
+from UNet import Unet
 
 
 def get_model(num_classes=2, use_sigmoid=False):
@@ -23,3 +24,8 @@ def get_model(num_classes=2, use_sigmoid=False):
     model.cuda(0)
     preproc = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
     return model, preproc
+
+def get_custom_model(num_classes=2, use_sigmoid=False):
+    unet = Unet(num_classes, use_sigmoid)
+    unet.cuda(0)
+    return unet

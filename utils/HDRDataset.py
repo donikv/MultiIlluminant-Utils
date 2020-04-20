@@ -36,6 +36,10 @@ class HDRDataset(Dataset):
         self.gt_names = list(map(lambda x: x[:-4], self.gt_names))
         self.gt_names = list(filter(lambda x: x[:-11] + '.hdr' in all_images, self.gt_names))
         self.image_names = list(map(lambda x: x[:-11] + '.hdr', self.gt_names))
+        if datatype == 'train':
+            self.image_names = self.image_names[0:-20]
+        else:
+            self.image_names = self.image_names[-19:]
 
     def __getitem__(self, idx):
         image_name = self.image_names[idx]

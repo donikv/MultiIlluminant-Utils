@@ -8,7 +8,7 @@ from torch.utils.data.dataloader import DataLoader
 
 from Dataset import MIDataset, MIPatchedDataset
 from Losses import BCEDiceLoss
-from Models import get_model
+from Models import get_model, get_custom_model
 from dataset_utils import visualize_tensor, to_np_img, transform_from_log, visualize, mask_to_image
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 import numpy as np
@@ -28,9 +28,9 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 if __name__ == '__main__':
 
     model, preprocessing_fn = get_model(num_classes=1, use_sigmoid=False)
-
+    model = get_custom_model(num_classes=1, use_sigmoid=False)
     num_workers = 0
-    bs = 4
+    bs = 2
     use_mask = False
     use_log = False
     use_corrected = True
@@ -50,25 +50,31 @@ if __name__ == '__main__':
         "valid": valid_loader
     }
 
-    num_epochs = 100
+    num_epochs = 1000
     log_interval = 5
     logdir = "./logs/segmentation"
 
     # model, criterion, optimizer
-    optimizer = torch.optim.Adam([
-        {'params': model.decoder.parameters(), 'lr': 5e-3},
-        {'params': model.encoder.parameters(), 'lr': 1e-3},
-    ])
+    # optimizer = torch.optim.Adam([
+    #     {'params': model.decoder.parameters(), 'lr': 5e-3},
+    #     {'params': model.encoder.parameters(), 'lr': 1e-3},
+    # ])
+    optimizer = torch.optim.Adam(model.parameters(), lr=7e-2)
     scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
     criterion1 = smp.utils.losses.DiceLoss(eps=1.)
     criterion2 = BCEDiceLoss()
 
     # -- TRAINING --
     min_valid_loss = 0
+    min_epoch = 0
     for epoch in range(num_epochs):
+        if epoch == 200:
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)
+        if epoch == 500:
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         for batch_idx, (data, mask, gt) in enumerate(train_loader):
             data, gs = data
-            p_mask, label = model(data)
+            p_mask = model(data)
             optimizer.zero_grad()
             loss = criterion2(p_mask, mask).mean()
             #         loss += criterion2(label, )
@@ -82,7 +88,7 @@ if __name__ == '__main__':
         cum_loss = 0
         for batch_idx, (data, mask, gt) in enumerate(valid_loader):
             data, gs = data
-            p_mask, label = model(data)
+            p_mask = model(data)
 
             optimizer.zero_grad()
             loss = criterion2(p_mask, mask).mean().detach()
@@ -100,4 +106,7 @@ if __name__ == '__main__':
             min_valid_loss = cum_loss
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
+            min_epoch = epoch
             torch.save(model.state_dict(), './models/unet-efficientnet-b0-gt-best-valid-cube2-sig')
+    print('Valid Epoch: {} \tMinimum loss {}'.format(
+        min_epoch, min_valid_loss))

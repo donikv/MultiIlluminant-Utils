@@ -4,14 +4,14 @@ import torch.nn as nn
 
 class Unet(nn.Module):
 
-    def __init__(self, num_classes=1, use_sigmoid=False):
+    def __init__(self, in_channels=2, num_classes=1, use_sigmoid=False, pretrain=False):
         super(Unet, self).__init__()
 
         self.use_sigmoid = use_sigmoid
 
         #128*128
         self.down1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channels, 64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
@@ -57,6 +57,15 @@ class Unet(nn.Module):
             nn.Conv2d(1024, 1024, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(1024),
             nn.ReLU(inplace=True),)
+
+        self.pretrain = pretrain
+        if self.pretrain:
+            self.pretrain_classifier = nn.Sequential(
+                nn.Linear(819200, 1024),
+                nn.ReLU(inplace=True),
+                nn.Linear(1024, in_channels),
+            )
+            return
 
         self.upsample4 = nn.Sequential(nn.Upsample(scale_factor=2, mode='bilinear'))
 
@@ -137,6 +146,10 @@ class Unet(nn.Module):
         center = self.center(down4_pool)
         #8*8
 
+        if self.pretrain:
+            center = center.view(-1, self.__num_flat_features(center))
+            return self.pretrain_classifier(center)
+
         up4 = self.upsample4(center)
         #16*16
 
@@ -161,3 +174,11 @@ class Unet(nn.Module):
             prob = prob.clamp(0, 1)
 
         return prob
+
+    @staticmethod
+    def __num_flat_features(x):
+        size = x.size()[1:]  # all dimensions except the batch dimension
+        num_features = 1
+        for s in size:
+            num_features *= s
+        return num_features
