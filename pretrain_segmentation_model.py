@@ -28,7 +28,7 @@ if __name__ == '__main__':
     model.cuda(0)
 
     num_workers = 0
-    bs = 1
+    bs = 4
 
     train_dataset = HDRDataset(datatype='train',
                               transforms=get_training_augmentation(),
@@ -62,7 +62,6 @@ if __name__ == '__main__':
     num_epochs = 1000
     log_interval = 5
     logdir = "./logs/segmentation"
-    cum_loss = 0
     min_valid_loss = 0
     for epoch in range(num_epochs):
         for batch_idx, (data, gt, gs, gt_gs) in enumerate(train_loader):
@@ -75,18 +74,22 @@ if __name__ == '__main__':
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if batch_idx % 1000 == 0:
-                plot(data, gt, out, gs, gt_gs)
+            if epoch % 100 != 0 or epoch < 150:
+                if batch_idx % 1000 == 0:
+                    plot(data, gt, out, gs, gt_gs)
             if batch_idx % log_interval == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                            100. * batch_idx / len(train_loader), loss.item()))
             torch.cuda.empty_cache()
+        cum_loss = 0
         for batch_idx, (data, gt, gs, gt_gs) in enumerate(valid_loader):
             out = model(data)
             loss = criterion1(out, gt)
-            if batch_idx % 1000 == 0:
-                plot(data, gt, out, gs, gt_gs)
+            cum_loss += loss.mean().detach()
+            if epoch % 10 != 0 or epoch < 20:
+                if batch_idx % 10 == 0:
+                    plot(data, gt, out, gs, gt_gs)
             if batch_idx % log_interval == 0:
                 print('Valid Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(data), len(valid_loader.dataset),
@@ -97,4 +100,4 @@ if __name__ == '__main__':
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
             min_epoch = epoch
-            torch.save(model.state_dict(), './models/unet-efficientnet-b0-gt-best-valid-cube2-sig')
+            torch.save(model.state_dict(), './models/unet-pretrained')

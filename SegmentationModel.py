@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
     model, preprocessing_fn = get_model(num_classes=1, use_sigmoid=False)
     model = get_custom_model(num_classes=1, use_sigmoid=False)
+    model.load_pretrained('./models/unet-pretrained-115')
     num_workers = 0
     bs = 2
     use_mask = False

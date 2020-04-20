@@ -26,6 +26,6 @@ def get_model(num_classes=2, use_sigmoid=False):
     return model, preproc
 
 def get_custom_model(num_classes=2, use_sigmoid=False):
-    unet = Unet(num_classes, use_sigmoid)
+    unet = Unet(in_channels=2, num_classes=num_classes, use_sigmoid=use_sigmoid)
     unet.cuda(0)
     return unet
