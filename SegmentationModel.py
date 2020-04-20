@@ -33,7 +33,7 @@ if __name__ == '__main__':
     num_workers = 0
     bs = 2
     use_mask = False
-    use_log = False
+    use_log = True
     use_corrected = True
     dataset = 'cube'
     folder = 'dataset_relighted'
