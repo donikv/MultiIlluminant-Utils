@@ -14,7 +14,7 @@ from transformation_utils import transform_to_log
 
 class MIDataset(Dataset):
     def __init__(self, path: str = './data', folder: str = 'dataset_crf/lab', special_folder: str = '',
-                 df: object = None, datatype: object = 'train',
+                 df: object = None, datatype: object = 'train', dataset='crf',
                  img_ids: object = None,
                  transforms: object = albu.Compose([albu.HorizontalFlip(), AT.ToTensor()]),
                  preprocessing: object = None,
@@ -29,18 +29,23 @@ class MIDataset(Dataset):
         self.folder = folder
         self.log_transform = log_transform
         self.use_corrected = use_corrected
+        self.dataset = dataset
 
-        if self.datatype != 'test':
-            self.gt_names = os.listdir(f"{path}/{folder}/groundtruth/{special_folder}")
-
-        self.image_names = os.listdir(f"{path}/{folder}/srgb8bit/{special_folder}")
+        if self.use_corrected:
+            self.image_names = os.listdir(f"{path}/{folder}/img_corrected_1/{special_folder}")
+        else:
+            if self.dataset != 'crf':
+                self.image_names = os.listdir(f"{path}/{folder}/images/{special_folder}")
+            else:
+                self.image_names = os.listdir(f"{path}/{folder}/srgb8bit/{special_folder}")
 
         self.path = path
         self.folder = folder
 
     def __getitem__(self, idx):
         image_name = self.image_names[idx]
-        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask, use_corrected=self.use_corrected)
+        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
+                                                      use_corrected=self.use_corrected, dataset=self.dataset)
         gs, gt_gs = [], []
         if self.log_transform:
             image, gs = transform_to_log(image)
@@ -71,13 +76,14 @@ class MIDataset(Dataset):
 
 class MIPatchedDataset(MIDataset):
     def __init__(self, path: str = './data', folder: str = 'dataset_crf/lab', special_folder: str = '',
-                 df: object = None, datatype: object = 'train',
+                 df: object = None, datatype: object = 'train', dataset='crf',
                  img_ids: object = None,
                  transforms: object = albu.Compose([albu.HorizontalFlip(), AT.ToTensor()]),
                  preprocessing: object = None,
                  use_mask: bool = False, use_corrected: bool = False,
-                 patch_width_ratio: float = 1. / 10, patch_height_ratio: float = 1. / 10, log_transform=False) -> object:
-        super(MIPatchedDataset, self).__init__(path, folder, special_folder, df, datatype, img_ids, transforms,
+                 patch_width_ratio: float = 1. / 10, patch_height_ratio: float = 1. / 10,
+                 log_transform=False) -> object:
+        super(MIPatchedDataset, self).__init__(path, folder, special_folder, df, datatype, dataset, img_ids, transforms,
                                                preprocessing, use_mask, use_corrected, log_transform)
         self.patch_width_ratio = patch_width_ratio
         self.patch_height_ratio = patch_height_ratio
@@ -87,32 +93,31 @@ class MIPatchedDataset(MIDataset):
         image_idx = int(idx / patches_per_img)
         patch_idx = idx % patches_per_img
         image_name = self.image_names[image_idx]
-        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask, use_corrected=self.use_corrected)
+        image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
+                                                      use_corrected=self.use_corrected, dataset=self.dataset)
 
         image = get_patch_with_index(image, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
         mask = get_patch_with_index(mask, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
         gt = get_patch_with_index(gt, patch_idx, self.patch_height_ratio, self.patch_width_ratio)
 
-        gs, gt_gs = [], []
-        if self.log_transform:
-            image, gs = transform_to_log(image)
-            gt, gt_gs = transform_to_log(gt)
-
         augmented = self.transforms(image=image, mask=mask)
         img = augmented['image']
         mask = augmented['mask']
-        augmented = self.transforms(image=image, mask=gt)
-        gt = augmented['mask']
         if self.preprocessing:
             preprocessed = self.preprocessing(image=img, mask=mask)
             img = preprocessed['image']
             mask = preprocessed['mask']
-            preprocessed = self.preprocessing(image=img, mask=gt)
-            gt = preprocessed['mask']
+
+        gs, gt_gs = [], []
+        if self.log_transform:
+            img, gs = transform_to_log(img)
+            gt, gt_gs = transform_to_log(gt)
+            gt, gt_gs = gt.mean(0).mean(0), gt_gs.mean(0).mean(0)
+
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
 
-        gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
-        mask = np.array([[(np.array([1, 0]) if pixel[0] > 128 else np.array([0, 1])) for pixel in row] for row in mask])
+        gt = torch.tensor(gt, dtype=torch.float32, device="cuda")
+        mask = np.array([[(np.array([1]) if pixel[0] > 128 else np.array([0])) for pixel in row] for row in mask])
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         return (img, gs), \
                mask, \

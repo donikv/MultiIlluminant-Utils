@@ -27,16 +27,19 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 
 if __name__ == '__main__':
 
-    model, preprocessing_fn = get_model(num_classes=1)
+    model, preprocessing_fn = get_model(num_classes=1, use_sigmoid=False)
 
     num_workers = 0
     bs = 4
     use_mask = False
     use_log = False
     use_corrected = True
-    train_dataset = MIDataset(datatype='train',
+    dataset = 'cube'
+    folder = 'dataset_relighted'
+    folder_valid = 'dataset_relighted/valid'
+    train_dataset = MIDataset(folder=folder, datatype='train', dataset=dataset,
                               transforms=get_training_augmentation(), use_mask=use_mask, log_transform=use_log, use_corrected=use_corrected)  # , preprocessing=get_preprocessing(preprocessing_fn))
-    valid_dataset = MIDataset(folder="dataset_crf/valid", datatype='valid',
+    valid_dataset = MIDataset(folder=folder_valid, datatype='valid', dataset=dataset,
                               transforms=get_validation_augmentation(), use_mask=use_mask, log_transform=use_log, use_corrected=use_corrected)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
     train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers)
@@ -91,8 +94,10 @@ if __name__ == '__main__':
                            100. * batch_idx / len(valid_loader), loss.item()))
                 plot(data, gs, mask, p_mask, use_log)
             torch.cuda.empty_cache()
+        print('Valid Epoch: {} \tCumulative loss {} \tMinimum loss {}'.format(
+            epoch, cum_loss, min_valid_loss))
         if epoch == 0:
             min_valid_loss = cum_loss
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
-            torch.save(model.state_dict(), './models/unet-efficientnet-b2-gt-best-valid-sig')
+            torch.save(model.state_dict(), './models/unet-efficientnet-b0-gt-best-valid-cube2-sig')

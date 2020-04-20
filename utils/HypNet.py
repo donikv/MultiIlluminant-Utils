@@ -26,7 +26,7 @@ class HypNet(nn.Module):
             nn.Dropout(),
         )
 
-        in_size = self.c2_out * 6 * 6
+        in_size = self.c2_out * 6 * 6 #TODO make calculations for FCL input size
 
         self.branch_a = nn.Sequential(
             nn.Linear(in_size, 120),

@@ -33,12 +33,13 @@ def color_correct_fast(img, u_ill, c_ill=1 / 3.):
 def color_correct_with_mask(img, mask, c1, c2, filter=lambda x: x):
     mask = to_np_img(mask)
     mask = mask / (np.max(mask))
+    mask = np.clip(mask, 0, 1)
     # c1 = torch.tensor(c1)
     # c2 = torch.tensor(c2)
     # gt = np.array(
     #     [[c2 * pixel[0] + c1 * (1 - pixel[0]) for pixel in row] for row in mask])
     gt = np.array(
-        [[c1 if pixel[0] < 0.5 else c2 for pixel in row] for row in mask])
+        [[c1 * (1 - pixel[0]) + c2 * pixel[0] for pixel in row] for row in mask])
     gt = filter(gt)
     gt = torch.tensor(gt)
     return color_correct_tensor(img[0], gt), gt
@@ -111,7 +112,7 @@ def get_training_augmentation(x: int = 320, y: int = 640):
     train_transform = [
         albu.HorizontalFlip(p=0.5),
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=0.5, border_mode=0),
-        albu.RandomGamma(p=0.75),
+        # albu.RandomGamma(p=0.75),
         albu.GridDistortion(p=0.25),
         albu.OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5),
         albu.Resize(x, y),

@@ -8,14 +8,16 @@ import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 from kmodes.kmodes import KModes
 
-def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False):
+def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False, load_any_mask=True, dataset='crf'):
     """
     Return image based on image name and folder.
     """
-    images_data_folder = f"{path}/{folder}/srgb8bit"
+    images = 'srgb8bit' if dataset == 'crf' else 'images'
+    gts = 'groundtruth' if dataset == 'crf' else 'gt'
+    images_data_folder = f"{path}/{folder}/{images}"
     if use_corrected:
         images_data_folder = f"{path}/{folder}/img_corrected_1"
-    gt_data_folder = f"{path}/{folder}/groundtruth"
+    gt_data_folder = f"{path}/{folder}/{gts}"
     mask_data_folder = f"{path}/{folder}/gt_mask"
     if use_mask:
         mask_data_folder = f"{path}/{folder}/masks"
@@ -26,9 +28,29 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gt = cv2.imread(gt_path)
     gt = cv2.cvtColor(gt, cv2.COLOR_BGR2RGB)
-    mask = cv2.imread(mask_path)
-    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-    return img, gt, mask
+    if load_any_mask:
+        # TODO Remove this try catach
+        try:
+            mask = cv2.imread(mask_path)
+            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        except:
+            mask_path = os.path.join(mask_data_folder, '339.png')
+            mask = cv2.imread(mask_path)
+            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        if dataset != 'crf':
+            for i in range(200, img.shape[0]):
+                for j in range(400, img.shape[1]):
+                    img[i][j] = np.zeros(3)
+                    gt[i][j] = np.zeros(3)
+                    mask[i][j] = np.zeros(3)
+        return img, gt, mask
+    else:
+        if dataset != 'cube':
+            for i in range(200, img.shape[0]):
+                for j in range(400, img.shape[1]):
+                    img[i][j] = np.zeros(3)
+                    gt[i][j] = np.zeros(3)
+        return img, gt, None
 
 def load_img_hdr_dataset(image_name, image_path):
     image_path = os.path.join(image_path, image_name)
@@ -40,7 +62,9 @@ def to_np_img(t: torch.tensor):
     if len(t.shape) == 4:
         t = t[0]
     if t.shape[-1] == 3 or t.shape[-1] == 2:
-        return t.cpu().detach().numpy()
+        if type(t) is not np.ndarray:
+            return t.cpu().detach().numpy()
+        return t
     return t.cpu().detach().numpy().transpose(1, 2, 0)
 
 
@@ -120,7 +144,7 @@ def prep_img_for_clustering(img: np.ndarray):
 
     # convert to np.float32
     Z = np.float32(Z)
-    mask = (Z > 0) & (Z < 255)
+    mask = (Z > -1) & (Z < 256)
     mask = np.array(list(map(lambda x: x.all(), mask)))
     # print(mask)
     Z = Z[mask]
