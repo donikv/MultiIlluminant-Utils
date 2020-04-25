@@ -6,15 +6,48 @@ import HypNet
 from Dataset import MIDataset, MIPatchedDataset
 from torch.utils.data.dataloader import DataLoader
 
-from Models import get_model
+from Models import get_model, get_custom_model
 from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor, \
-    get_center_colors, to_np_img
+    get_center_colors, to_np_img, mask_to_image
 from transformation_utils import color_correct, color_correct_tensor, get_training_augmentation, \
-    get_validation_augmentation, color_correct_with_mask, to_tensor, color_correct_fast
+    get_validation_augmentation, color_correct_with_mask, to_tensor, color_correct_fast, transform_from_log
 from SegmentationModel import plot
 import Losses as ls
 import numpy as np
 import cv2
+
+
+def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
+    d = to_np_img(data[0])
+    if use_log:
+        d = cv2.split(d)
+        d = np.dstack((d[0], d[1]))
+        gs = gs[0]
+        d = transform_from_log(d, gs)
+    d = d.astype(int)
+    mask = mask_to_image(to_np_img(mask[0]))
+    p_mask = custom_transform(mask_to_image(to_np_img(p_mask[0])))
+    visualize(d, p_mask, mask=mask)
+
+
+def test_custom_model(path, images_path):
+    use_corrected = True
+    model = get_custom_model(num_classes=1, use_sigmoid=False)
+    model.eval()
+    dataset = MIDataset(datatype='test', folder='dataset_relighted', special_folder=images_path,
+                        transforms=get_validation_augmentation(), use_mask=False, use_corrected=use_corrected, log_transform=True)
+    loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
+    model.load_state_dict(torch.load(path))
+
+    dl = ls.DiceLoss()
+    for batch_idx, (data, mask, gt) in enumerate(loader):
+        data, gs = data
+        p_mask = model(data)
+        p_mask = p_mask.clamp(0, 1)
+        loss = dl(p_mask, mask).mean().detach()
+        print(loss)
+        plot(data, gs, mask, p_mask, True)
+    torch.cuda.empty_cache()
 
 
 def test_model(path, images_path):
@@ -117,7 +150,7 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
         torch.cuda.empty_cache()
 
 
-test_model('./models/unet-efficientnet-b0-gt-best-valid-cube2', '')
+test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom', '')
 # test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
 # exit(0)
 # img, mask, gt = load_img_and_gt('bmug_b_r.png')

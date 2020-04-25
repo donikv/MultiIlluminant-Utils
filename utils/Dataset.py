@@ -49,19 +49,30 @@ class MIDataset(Dataset):
         gs, gt_gs = [], []
         if self.log_transform:
             image, gs = transform_to_log(image)
+            gs = np.expand_dims(gs, axis=2)
             gt, gt_gs = transform_to_log(gt)
-
-        augmented = self.transforms(image=image, mask=mask)
+            inputs = {'image': image, 'mask': mask, 'image2': gs, 'gt_gs': gt_gs, 'gt': gt}
+            augmented = self.transforms(**inputs)
+            gs = augmented['image2']
+            gs = gs.squeeze()
+            gt_gs = augmented['gt_gs']
+        else:
+            inputs = {'image': image, 'mask': mask, 'gt': gt}
+            augmented = self.transforms(**inputs)
         img = augmented['image']
         mask = augmented['mask']
-        augmented = self.transforms(image=image, mask=gt)
-        gt = augmented['mask']
+        gt = augmented['gt']
         if self.preprocessing:
-            preprocessed = self.preprocessing(image=img, mask=mask)
+            if self.log_transform:
+                preprocessed = self.preprocessing(image=image, mask=mask, gt=gt, gs=gs, gt_gs=gt_gs)
+                gs = preprocessed['gs']
+                gt_gs = preprocessed['gt_gs']
+            else:
+                preprocessed = self.preprocessing(image=image, mask=mask, gt=gt)
             img = preprocessed['image']
             mask = preprocessed['mask']
-            preprocessed = self.preprocessing(image=img, mask=gt)
-            gt = preprocessed['mask']
+            gt = preprocessed['gt']
+
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         mask = np.array([[(np.array([1]) if pixel[0] > 128 else np.array([0])) for pixel in row] for row in mask])

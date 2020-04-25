@@ -34,7 +34,7 @@ def create_corrected_image(img: np.ndarray, gt: np.ndarray, mask: np.ndarray):
 if __name__ == '__main__':
     make_mask = True
     path = './data'
-    folder = 'dataset_relighted'
+    folder = 'dataset_relighted/complex2'
     special_folder = ''
     image_names = os.listdir(f"{path}/{folder}/images/{special_folder}")
     cor_image_names = os.listdir(f"{path}/{folder}/img_corrected_1/{special_folder}")

@@ -118,7 +118,7 @@ def get_training_augmentation(x: int = 320, y: int = 640):
         albu.Resize(x, y),
         # albu.Normalize(always_apply=True),
     ]
-    return albu.Compose(train_transform)
+    return albu.Compose(train_transform, additional_targets={"image2": "image"})
 
 
 def get_validation_augmentation(x: int = 320, y: int = 640):
@@ -126,7 +126,7 @@ def get_validation_augmentation(x: int = 320, y: int = 640):
     test_transform = [
         albu.Resize(x, y)
     ]
-    return albu.Compose(test_transform)
+    return albu.Compose(test_transform, additional_targets={"image2": "image"})
 
 
 def get_preprocessing(preprocessing_fn):
