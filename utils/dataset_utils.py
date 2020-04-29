@@ -29,14 +29,8 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     gt = cv2.imread(gt_path)
     gt = cv2.cvtColor(gt, cv2.COLOR_BGR2RGB)
     if load_any_mask:
-        # TODO Remove this try catach
-        try:
-            mask = cv2.imread(mask_path)
-            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-        except:
-            mask_path = os.path.join(mask_data_folder, '339.png')
-            mask = cv2.imread(mask_path)
-            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        mask = cv2.imread(mask_path)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
         if dataset != 'crf':
             for i in range(200, img.shape[0]):
                 for j in range(400, img.shape[1]):
@@ -68,10 +62,12 @@ def to_np_img(t: torch.tensor):
     return t.cpu().detach().numpy().transpose(1, 2, 0)
 
 
-def mask_to_image(t: np.ndarray):
+def mask_to_image(t: np.ndarray, use_mixture=False):
     if t.shape[-1] == 3:
         return t
     t = t / t.max()
+    if use_mixture:
+        return np.squeeze(t * 255)
     return np.array(
         [[(np.array([255, 255, 255]) if pixel[0] > 0.5 else np.array([0, 0, 0])) for pixel in row] for row in
          t])

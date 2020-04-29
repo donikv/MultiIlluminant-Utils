@@ -57,21 +57,21 @@ class MIDataset(Dataset):
             gs = gs.squeeze()
             gt_gs = augmented['gt_gs']
         else:
-            inputs = {'image': image, 'mask': mask, 'gt': gt}
+            inputs = {'image': image, 'mask': mask, 'image2': gt}
             augmented = self.transforms(**inputs)
         img = augmented['image']
         mask = augmented['mask']
-        gt = augmented['gt']
+        gt = augmented['image2']
         if self.preprocessing:
             if self.log_transform:
-                preprocessed = self.preprocessing(image=image, mask=mask, gt=gt, gs=gs, gt_gs=gt_gs)
-                gs = preprocessed['gs']
+                preprocessed = self.preprocessing(image=img, mask=mask, gt=gt, image2=gs, gt_gs=gt_gs)
+                gs = preprocessed['image2']
                 gt_gs = preprocessed['gt_gs']
             else:
-                preprocessed = self.preprocessing(image=image, mask=mask, gt=gt)
+                preprocessed = self.preprocessing(image=img, mask=mask, image2=gt)
             img = preprocessed['image']
             mask = preprocessed['mask']
-            gt = preprocessed['gt']
+            gt = preprocessed['image2']
 
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")

@@ -7,11 +7,8 @@ from pytorch_metric_learning import losses
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-import HypNet
-from Dataset import MIDataset, MIPatchedDataset
-from HDRDataset import HDRDataset, HDRPatchedDataset
-from Losses import BCEDiceLoss, angular_loss
-from Models import get_model
+
+from CubeDataset import CubeDataset
 from UNet import Unet
 from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
 from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
@@ -30,10 +27,10 @@ if __name__ == '__main__':
     num_workers = 0
     bs = 4
 
-    train_dataset = HDRDataset(datatype='train',
+    train_dataset = CubeDataset(datatype='train',
                               transforms=get_training_augmentation(),
                               log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
-    valid_dataset = HDRDataset(datatype='valid',
+    valid_dataset = CubeDataset(datatype='valid',
                               transforms=get_validation_augmentation(),
                               log_transform=use_log)  # , preprocessing=get_preprocessing(preprocessing_fn))
 
@@ -41,7 +38,7 @@ if __name__ == '__main__':
     valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers)
 
     # model, criterion, optimizer
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=6e-2)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-2)
     criterion1 = torch.nn.MSELoss()
 
     from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
@@ -65,9 +62,9 @@ if __name__ == '__main__':
     min_valid_loss = 0
     for epoch in range(num_epochs):
         for batch_idx, (data, gt, gs, gt_gs) in enumerate(train_loader):
-            if epoch == 200:
-                optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)
-            if epoch == 500:
+            if epoch == 30:
+                optimizer = torch.optim.Adam(model.parameters(), lr=5e-3)
+            if epoch == 100:
                 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
             out = model(data)
             loss = criterion1(out, gt).sum()
@@ -100,4 +97,4 @@ if __name__ == '__main__':
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
             min_epoch = epoch
-            torch.save(model.state_dict(), './models/unet-pretrained')
+            torch.save(model.state_dict(), './models/unet-pretrained-cube')

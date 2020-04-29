@@ -129,6 +129,15 @@ def get_validation_augmentation(x: int = 320, y: int = 640):
     return albu.Compose(test_transform, additional_targets={"image2": "image"})
 
 
+def get_test_augmentation(x: int = 320, y: int = 640):
+    """Add paddings to make image shape divisible by 32"""
+    test_transform = [
+        albu.Resize(x, y),
+        albu.HueSaturationValue(0, (70, 70), (-20, -20), always_apply=True),
+    ]
+    return albu.Compose(test_transform, additional_targets={"image2": "image"})
+
+
 def get_preprocessing(preprocessing_fn):
     """Construct preprocessing transform
 
@@ -142,9 +151,8 @@ def get_preprocessing(preprocessing_fn):
 
     _transform = [
         albu.Lambda(image=preprocessing_fn),
-        albu.Lambda(image=to_tensor, mask=to_tensor),
     ]
-    return albu.Compose(_transform)
+    return albu.Compose(_transform, additional_targets={"image2": "image"})
 
 
 def to_tensor(x, **kwargs):
