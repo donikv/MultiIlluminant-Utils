@@ -43,6 +43,33 @@ class MIDataset(Dataset):
         self.folder = folder
 
     def __getitem__(self, idx):
+        if self.dataset == 'test':
+            return self.get_test_item(idx)
+        else:
+            return self.get_train_item(idx)
+
+    def get_test_item(self, idx):
+        image_name = self.image_names[idx]
+        image = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, dataset=self.dataset)
+        gs = []
+        if self.log_transform:
+            image, gs = transform_to_log(image)
+            aug = self.transforms(image=image, mask=gs)
+            img, gs = aug['image'], aug['mask'].squeeze()
+        else:
+            aug = self.transforms(image=image, mask=image)
+            img = aug['image']
+        if self.preprocessing:
+            if self.log_transform:
+                aug = self.preprocessing(image=img, mask=gs)
+                img, gs = aug['image'], aug['mask'].squeeze()
+            else:
+                aug = self.preprocessing(image=img, mask=image)
+                img = aug['image']
+        img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
+        return img, gs
+
+    def get_train_item(self, idx):
         image_name = self.image_names[idx]
         image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
                                                       use_corrected=self.use_corrected, dataset=self.dataset)

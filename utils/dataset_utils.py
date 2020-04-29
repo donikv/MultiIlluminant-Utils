@@ -12,6 +12,15 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     """
     Return image based on image name and folder.
     """
+
+    if dataset == 'test':
+        images_data_folder = f"{path}/{folder}/img_corrected_1"
+        image_path = os.path.join(images_data_folder, x)
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        img = (img / (2**16) * 255).astype(np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        return img
+
     images = 'srgb8bit' if dataset == 'crf' else 'images'
     gts = 'groundtruth' if dataset == 'crf' else 'gt'
     images_data_folder = f"{path}/{folder}/{images}"

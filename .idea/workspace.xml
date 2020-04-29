@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/utils/CubeDataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SegmentationModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/SegmentationModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/make_mask.py" beforeDir="false" afterPath="$PROJECT_DIR$/make_mask.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pretrain_segmentation_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretrain_segmentation_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
@@ -325,7 +319,7 @@
       <workItem from="1587802108511" duration="34699000" />
       <workItem from="1588073173111" duration="2291000" />
       <workItem from="1588104742252" duration="3623000" />
-      <workItem from="1588150800914" duration="6024000" />
+      <workItem from="1588150800914" duration="10784000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -474,7 +468,14 @@
       <option name="project" value="LOCAL" />
       <updated>1587808850275</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Adds training for different types of networks and their testing">
+      <created>1588172060778</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1588172060778</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -523,7 +524,8 @@
     <MESSAGE value="Simplifies unet model" />
     <MESSAGE value="Splits Unet into encoder and decoder" />
     <MESSAGE value="Adds more depth to unet" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds more depth to unet" />
+    <MESSAGE value="Adds training for different types of networks and their testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds training for different types of networks and their testing" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586181792108" />
@@ -680,7 +682,7 @@
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnesmbleModelHDR.coverage" NAME="EnesmbleModelHDR Coverage Results" MODIFIED="1585827724969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1587217668155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1588153002029" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1587758426359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1588185289637" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$log_chromaticity.coverage" NAME="log_chromaticity Coverage Results" MODIFIED="1585817165541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

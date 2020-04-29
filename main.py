@@ -54,16 +54,24 @@ def test_custom_model(path, images_path):
 
 def test_model(path, images_path, type):
     use_corrected = True
-    crf = True
+    dataset='test'
     model, preproc = get_model(num_classes=1, type=type)
     model.eval()
-    if crf:
+    datatype = dataset
+    preproc = None if type != 'fpn' else get_preprocessing(preproc)
+    if dataset == 'crf':
         dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
-                            transforms=get_test_augmentation()#, preprocessing=get_preprocessing(preproc)
+                            transforms=get_test_augmentation(), preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='crf')
+
+    elif dataset == 'test':
+        dataset = MIDataset(datatype='test', folder='test', special_folder=images_path,
+                            transforms=get_test_augmentation(), preprocessing=preproc
+                            , use_mask=False, use_corrected=use_corrected, dataset='test')
+
     else:
         dataset = MIDataset(datatype='test', folder='dataset_relighted/complex2/valid', special_folder=images_path,
-                        transforms=get_validation_augmentation()#, preprocessing=get_preprocessing(preproc)
+                        transforms=get_validation_augmentation(), preprocessing=preproc
                         , use_mask=False, use_corrected=use_corrected, dataset='cube')
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     model.load_state_dict(torch.load(path))
@@ -75,11 +83,19 @@ def test_model(path, images_path, type):
     def sigmoid(x):
         return 1 / (1 + torch.exp(x))
 
+    if datatype == 'test':
+        for data, gs in loader:
+            p_mask, label = model(data)
+            p_mask = torch.clamp(p_mask, 0, 1)
+            plot(data, gs, p_mask / p_mask.max(), p_mask, False, use_mixture=True)
+        return
+
     for batch_idx, (data, mask, gt) in enumerate(loader):
         data, gs = data
         gt, gt_gs = gt
         p_mask, label = model(data)
         p_mask = torch.clamp(p_mask, 0, 1)
+        plot(data, gs, mask, p_mask, False, use_mixture=True)
         print(dice(mask, p_mask))
         # center = get_center_colors(gt.cpu(), mask.cpu())
         # if use_corrected:
@@ -103,7 +119,6 @@ def test_model(path, images_path, type):
         # else:
         #     gt_mask = gt_mask.type(torch.IntTensor)
         # visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu(), gt_mask, cimg)
-        plot(data, gs, mask, p_mask, False, use_mixture=True)
         # input("Press Enter to continue...")
 
 
