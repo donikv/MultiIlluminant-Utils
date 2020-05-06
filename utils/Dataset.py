@@ -18,7 +18,7 @@ class MIDataset(Dataset):
                  img_ids: object = None,
                  transforms: object = albu.Compose([albu.HorizontalFlip(), AT.ToTensor()]),
                  preprocessing: object = None,
-                 use_mask: bool = False, use_corrected: bool = False, log_transform=False) -> object:
+                 use_mask: bool = False, use_corrected: bool = False, log_transform=False, load_any_mask=True) -> object:
         self.df = df
         self.datatype = datatype
         self.img_ids = img_ids
@@ -30,6 +30,7 @@ class MIDataset(Dataset):
         self.log_transform = log_transform
         self.use_corrected = use_corrected
         self.dataset = dataset
+        self.load_any_mask = load_any_mask
 
         if self.use_corrected:
             self.image_names = os.listdir(f"{path}/{folder}/img_corrected_1/{special_folder}")
@@ -50,7 +51,7 @@ class MIDataset(Dataset):
 
     def get_test_item(self, idx):
         image_name = self.image_names[idx]
-        image = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, dataset=self.dataset)
+        image = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, dataset=self.dataset, load_any_mask=self.load_any_mask)
         gs = []
         if self.log_transform:
             image, gs = transform_to_log(image)
@@ -67,12 +68,14 @@ class MIDataset(Dataset):
                 aug = self.preprocessing(image=img, mask=image)
                 img = aug['image']
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
-        return img, gs
+        return image_name, img, gs
 
     def get_train_item(self, idx):
         image_name = self.image_names[idx]
         image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
-                                                      use_corrected=self.use_corrected, dataset=self.dataset)
+                                                      use_corrected=self.use_corrected, dataset=self.dataset, load_any_mask=self.load_any_mask)
+        if not self.load_any_mask:
+            mask = gt
         gs, gt_gs = [], []
         if self.log_transform:
             image, gs = transform_to_log(image)

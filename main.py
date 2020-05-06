@@ -8,7 +8,7 @@ from torch.utils.data.dataloader import DataLoader
 
 from Models import get_model, get_custom_model
 from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor, \
-    get_center_colors, to_np_img, mask_to_image
+    get_center_colors, to_np_img, mask_to_image, load_img_and_gt_crf_dataset
 from transformation_utils import color_correct, color_correct_tensor, get_training_augmentation, \
     get_validation_augmentation, color_correct_with_mask, to_tensor, color_correct_fast, transform_from_log, \
     get_preprocessing, get_test_augmentation
@@ -16,6 +16,7 @@ from SegmentationModel import plot
 import Losses as ls
 import numpy as np
 import cv2
+import utils.statistics_utils as stats
 
 
 def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x, use_mixture=False):
@@ -52,25 +53,27 @@ def test_custom_model(path, images_path):
     torch.cuda.empty_cache()
 
 
-def test_model(path, images_path, type):
+def test_model(path, images_path, type, dataset):
     use_corrected = True
-    dataset='test'
     model, preproc = get_model(num_classes=1, type=type)
     model.eval()
     datatype = dataset
-    preproc = None if type != 'fpn' else get_preprocessing(preproc)
+    preproc = None if not path.endswith('preproc') else get_preprocessing(preproc)
+    folder = None
     if dataset == 'crf':
-        dataset = MIDataset(datatype='test', folder='dataset_crf/realworld', special_folder=images_path,
-                            transforms=get_test_augmentation(), preprocessing=preproc
+        folder = 'dataset_crf/realworld'
+        dataset = MIDataset(datatype='test', folder=folder, special_folder=images_path,
+                            transforms=get_validation_augmentation(), preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='crf')
 
     elif dataset == 'test':
-        dataset = MIDataset(datatype='test', folder='test', special_folder=images_path,
+        folder = 'test/whatsapp'
+        dataset = MIDataset(datatype='test', folder=folder, special_folder=images_path,
                             transforms=get_test_augmentation(), preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='test')
 
     else:
-        dataset = MIDataset(datatype='test', folder='dataset_relighted/complex2/valid', special_folder=images_path,
+        dataset = MIDataset(datatype='test', folder='dataset_relighted/valid', special_folder=images_path,
                         transforms=get_validation_augmentation(), preprocessing=preproc
                         , use_mask=False, use_corrected=use_corrected, dataset='cube')
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
@@ -84,42 +87,43 @@ def test_model(path, images_path, type):
         return 1 / (1 + torch.exp(x))
 
     if datatype == 'test':
-        for data, gs in loader:
+        # gts = np.loadtxt('data/test/gt2.txt')
+        for idx,  (name, data, gs) in enumerate(loader):
             p_mask, label = model(data)
             p_mask = torch.clamp(p_mask, 0, 1)
-            plot(data, gs, p_mask / p_mask.max(), p_mask, False, use_mixture=True)
-        return
+            name = name[0]
+            image = load_img_and_gt_crf_dataset(name, folder=folder, dataset=datatype)
+            fx = image.shape[1] / p_mask.shape[3]
+            fy = image.shape[0] / p_mask.shape[2]
+            rot_mask = cv2.resize(mask_to_image(to_np_img(p_mask)), (0, 0), fx=fx, fy=fy)
+            if rot_mask.shape[0] > rot_mask.shape[1]:
+                rot_mask = rot_mask.transpose((1, 0, 2))
+            cv2.imwrite(f'data/{folder}/masks/{name}', rot_mask)
 
+            # idx = int(name[0:-4]) - 1
+            # gt = gts[idx]
+            # corrected = color_correct_with_mask(data, p_mask, 1, )
+            plot(data, gs, rot_mask, p_mask, False, use_mixture=True)
+            torch.cuda.empty_cache()
+        return
+    dices = []
+    sig_dices = []
     for batch_idx, (data, mask, gt) in enumerate(loader):
         data, gs = data
         gt, gt_gs = gt
         p_mask, label = model(data)
-        p_mask = torch.clamp(p_mask, 0, 1)
-        plot(data, gs, mask, p_mask, False, use_mixture=True)
-        print(dice(mask, p_mask))
-        # center = get_center_colors(gt.cpu(), mask.cpu())
-        # if use_corrected:
-        #     gt = torch.tensor(to_tensor(color_correct_fast(to_np_img(gt), center[0])))
-        #     center = get_center_colors(gt, mask.cpu())
-        #
-        # def filter(img):
-        #     return cv2.GaussianBlur(img, (101, 101), 0)
-        #
-        # cimg, gt_mask = color_correct_with_mask(data, p_mask, center[0], center[1], filter)
-        # if use_corrected:
-        #     cimg = cimg.type(torch.IntTensor)
-        # else:
-        #     gt_mask = gt_mask.type(torch.IntTensor)
-        # plot(data, gs, mask, p_mask, False)
-        # visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu(), gt_mask, cimg)
-        #
-        # cimg, gt_mask = color_correct_with_mask(data, p_mask, center[1], center[0], filter)
-        # if use_corrected:
-        #     cimg = cimg.type(torch.IntTensor)
-        # else:
-        #     gt_mask = gt_mask.type(torch.IntTensor)
-        # visualize_tensor(data.cpu().type(torch.IntTensor), gt.cpu(), gt_mask, cimg)
-        # input("Press Enter to continue...")
+        p_mask_clamp = torch.clamp(p_mask, 0, 1)
+        # plot(data, gs, mask, p_mask, False, use_mixture=True)
+        dc = dice(mask, p_mask_clamp)
+        dices.append(dc.item())
+        dc_sig = dice(mask, sigmoid(p_mask))
+        sig_dices.append(dc_sig.item())
+        # print(dc)
+    print(folder, path)
+    print(f'Mean: {np.array(dices).mean()}\t Trimean: {stats.trimean(dices)}\t Median: {stats.median(dices)}')
+    print(f'Mean: {np.array(sig_dices).mean()}\t Trimean: {stats.trimean(sig_dices)}\t Median: {stats.median(sig_dices)}')
+    print('--------------------------------------------------------------------------------')
+
 
 
 def test_hyp_sel(paths, images_path, use_log=False):
@@ -176,7 +180,13 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
         torch.cuda.empty_cache()
 
 
-test_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x', '', type='unet')
+type = 'unet'
+dataset = 'crf'
+# test_model('models/unet-efficientnet-b0-gt-best-valid-cube-comb-04_5-x', '', type=type, dataset=dataset)
+# print('Testing model 2')
+# test_model('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x', '', type=type, dataset=dataset)
+# print('Testing model 3')
+test_model('models/unet-efficientnet-b0-gt-best-valid-cube-comb-04_5', '', type=type, dataset=dataset)
 exit(0)
 test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom2-100', '')
 # test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)

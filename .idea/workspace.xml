@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/plot_graphs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/statistics_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RegressionModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/RegressionModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SegmentationModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/SegmentationModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
@@ -10,7 +14,6 @@
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,6 +44,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../CubeDataset" />
@@ -51,18 +55,20 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\PyCharm 2019.2.4\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_crf\realworld\img_corrected_1\special" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_crf\realworld\gt_mask\special" />
       <recent name="C:\Users\Donik\PycharmProjects\MultiIlluminant-Utils" />
       <recent name="$PROJECT_DIR$/data" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\test" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -78,28 +84,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.MultiIlluminantConv">
-    <configuration name="EnesmbleModelHDR" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="MultiIlluminantConv" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/EnesmbleModelHDR.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="EnsambleModel" type="PythonConfigurationType" factoryName="Python">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -141,10 +125,35 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="RegressionModel" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="MultiIlluminantConv" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/RegressionModel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="SegmentationModel" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -182,28 +191,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="load_hdr" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="MultiIlluminantConv" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/load_hdr.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="make_mask" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -218,6 +205,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/make_mask.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plot_graphs" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="MultiIlluminantConv" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_graphs.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -251,10 +260,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.SegmentationModel" />
+        <item itemvalue="Python.RegressionModel" />
+        <item itemvalue="Python.plot_graphs" />
         <item itemvalue="Python.make_mask" />
         <item itemvalue="Python.pretrain_segmentation_model" />
-        <item itemvalue="Python.EnesmbleModelHDR" />
-        <item itemvalue="Python.load_hdr" />
       </list>
     </recent_temporary>
   </component>
@@ -319,7 +328,12 @@
       <workItem from="1587802108511" duration="34699000" />
       <workItem from="1588073173111" duration="2291000" />
       <workItem from="1588104742252" duration="3623000" />
-      <workItem from="1588150800914" duration="10784000" />
+      <workItem from="1588150800914" duration="11804000" />
+      <workItem from="1588234690489" duration="1295000" />
+      <workItem from="1588242727087" duration="1242000" />
+      <workItem from="1588263439213" duration="31351000" />
+      <workItem from="1588576372115" duration="4003000" />
+      <workItem from="1588660433961" duration="744000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -475,7 +489,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588172060778</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Adds option to test the model with real images">
+      <created>1588185449503</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1588185449503</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -525,7 +546,8 @@
     <MESSAGE value="Splits Unet into encoder and decoder" />
     <MESSAGE value="Adds more depth to unet" />
     <MESSAGE value="Adds training for different types of networks and their testing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds training for different types of networks and their testing" />
+    <MESSAGE value="Adds option to test the model with real images" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds option to test the model with real images" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586181792108" />
@@ -606,11 +628,11 @@
     <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1586183114145" />
     <state x="481" y="234" width="947" height="591" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1586181792108" />
     <state x="481" y="234" width="947" height="591" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.27.1920.999@0.27.1920.999" timestamp="1586181792108" />
-    <state x="616" y="341" key="com.intellij.ide.util.TipDialog" timestamp="1588073174071">
+    <state x="616" y="341" width="930" height="562" key="com.intellij.ide.util.TipDialog" timestamp="1588660485870">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="493" y="270" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1586181792108" />
-    <state x="616" y="341" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1588073174071" />
+    <state x="616" y="341" width="930" height="562" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1588660485870" />
     <state x="616" y="350" key="com.intellij.ide.util.TipDialog/0.27.1920.987@0.27.1920.987" timestamp="1586181792108" />
     <state x="616" y="354" key="com.intellij.ide.util.TipDialog/0.27.1920.999@0.27.1920.999" timestamp="1586181792108" />
     <state x="624" y="145" width="662" height="727" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1586181792108" />
@@ -673,16 +695,17 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_hdr.coverage" NAME="load_hdr Coverage Results" MODIFIED="1585732449275" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1584614159291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1587217668155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$plot_graphs.coverage" NAME="plot_graphs Coverage Results" MODIFIED="1588512295770" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1588520241743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1587395741473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminantConv$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1583760427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_mat.coverage" NAME="load_mat Coverage Results" MODIFIED="1585325685325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel__1_.coverage" NAME="SegmentationModel (1) Coverage Results" MODIFIED="1584096648050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$pretrain_segmentation_model.coverage" NAME="pretrain_segmentation_model Coverage Results" MODIFIED="1587845569846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnesmbleModelHDR.coverage" NAME="EnesmbleModelHDR Coverage Results" MODIFIED="1585827724969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1587217668155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1588153002029" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1588185289637" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1588269205949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1588513393790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$log_chromaticity.coverage" NAME="log_chromaticity Coverage Results" MODIFIED="1585817165541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

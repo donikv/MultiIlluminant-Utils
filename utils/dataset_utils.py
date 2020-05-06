@@ -8,7 +8,7 @@ import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 from kmodes.kmodes import KModes
 
-def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False, load_any_mask=True, dataset='crf'):
+def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False, load_any_mask=True, dataset='crf', rotate=True):
     """
     Return image based on image name and folder.
     """
@@ -17,9 +17,13 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
         images_data_folder = f"{path}/{folder}/img_corrected_1"
         image_path = os.path.join(images_data_folder, x)
         img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-        img = (img / (2**16) * 255).astype(np.uint8)
+        if folder.endswith('nikon'):
+            img = (img / (2 ** 16) * 255).astype(np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        if img.shape[0] > img.shape[1] and rotate:
+            img = img.transpose((1, 0, 2))
         return img
+
 
     images = 'srgb8bit' if dataset == 'crf' else 'images'
     gts = 'groundtruth' if dataset == 'crf' else 'gt'
@@ -35,11 +39,16 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     mask_path = os.path.join(mask_data_folder, x)
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    gt = cv2.imread(gt_path)
-    gt = cv2.cvtColor(gt, cv2.COLOR_BGR2RGB)
+    if use_corrected:
+        gt = []
+    else:
+        gt = cv2.imread(gt_path)
+        gt = cv2.cvtColor(gt, cv2.COLOR_BGR2RGB)
     if load_any_mask:
         mask = cv2.imread(mask_path)
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        if use_corrected:
+            gt = mask
         if dataset != 'crf':
             for i in range(200, img.shape[0]):
                 for j in range(400, img.shape[1]):
@@ -78,8 +87,8 @@ def mask_to_image(t: np.ndarray, use_mixture=False):
     if use_mixture:
         return np.squeeze(t * 255)
     return np.array(
-        [[(np.array([255, 255, 255]) if pixel[0] > 0.5 else np.array([0, 0, 0])) for pixel in row] for row in
-         t])
+        [[np.array([pixel[0] * 255, pixel[0] * 255, pixel[0]*255]) for pixel in row] for row in
+         t], dtype=np.uint8)
 
 
 def transform_from_log(log, g):
