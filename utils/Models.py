@@ -2,7 +2,7 @@ import segmentation_models_pytorch as smp
 from UNet import Unet
 
 
-def get_model(num_classes=2, use_sigmoid=False, type='unet'):
+def get_model(num_classes=2, use_sigmoid=False, type='unet', in_channels=3):
     ENCODER = 'efficientnet-b0'
     ENCODER_WEIGHTS = 'imagenet'
     DEVICE = 'cuda'
@@ -20,14 +20,16 @@ def get_model(num_classes=2, use_sigmoid=False, type='unet'):
             encoder_weights=ENCODER_WEIGHTS,
             classes=num_classes,
             activation=ACTIVATION,
-            aux_params=aux_params)
+            aux_params=aux_params,
+            in_channels=in_channels)
     else:
         model = smp.FPN(
             encoder_name=ENCODER,
             encoder_weights=ENCODER_WEIGHTS,
             classes=num_classes,
             activation=ACTIVATION,
-            aux_params=aux_params)
+            aux_params=aux_params,
+            in_channels=in_channels)
     model.cuda(0)
     preproc = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
     return model, preproc

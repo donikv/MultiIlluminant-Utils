@@ -31,20 +31,20 @@ if __name__ == '__main__':
 
     use_custom = False
 
-    model, preprocessing_fn = get_model(num_classes=1, use_sigmoid=False, type='unet')
+    model, preprocessing_fn = get_model(num_classes=1, in_channels=2, use_sigmoid=False, type='unet')
     if use_custom:
         model = get_custom_model(num_classes=1, use_sigmoid=False)
         preprocessing_fn = None
-        model.load_state_dict(torch.load('./models/unet-pretrained-cube') )
-    dict = torch.load('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x')
-    model.load_state_dict(dict)
+        model.load_state_dict(torch.load('./models/unet-pretrained-cube'))
+    # dict = torch.load('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x')
+    # model.load_state_dict(dict)
     num_workers = 0
     bs = 4
     use_mask = False
-    use_log = use_custom and True
+    use_log = True
     use_corrected = True
     dataset = 'cube'
-    folder = 'dataset_relighted/'
+    folder = 'dataset_relighted/complex6'
     folder_valid = 'dataset_relighted/valid'
     preprocessing_fn = None
     train_dataset = MIDataset(folder=folder, datatype='train', dataset=dataset,
@@ -64,10 +64,8 @@ if __name__ == '__main__':
 
     num_epochs = 1000
     log_interval = 5
-    model_name = 'unet-efficientnet-b0-gt-best-valid-cube-comb-04_5'
+    model_name = 'unet-efficientnet-b0-gt-best-valid-cube6-06_5-log'
     logdir = f"./logs/{model_name}"
-    logdir_train = open(logdir+"train", 'a')
-    logdir_valid = open(logdir+"valid", 'a')
 
     # model, criterion, optimizer
     optimizer = torch.optim.Adam([
@@ -84,6 +82,8 @@ if __name__ == '__main__':
     min_epoch = 0
     starting_epoch = 0
     for epoch in range(num_epochs):
+        logdir_train = open(logdir + "train", 'a')
+        logdir_valid = open(logdir + "valid", 'a')
         if epoch < starting_epoch:
             continue
         cum_train_loss = 0
@@ -106,6 +106,8 @@ if __name__ == '__main__':
             torch.cuda.empty_cache()
         cum_train_loss = cum_train_loss / len(train_loader)
         logdir_train.write(f"{epoch}, {cum_train_loss}\n")
+        logdir_train.flush()
+        logdir_train.close()
         cum_loss = 0
         for batch_idx, (data, mask, gt) in enumerate(valid_loader):
             data, gs = data
@@ -136,5 +138,7 @@ if __name__ == '__main__':
         scheduler.step(cum_loss)
         cum_loss = cum_loss / len(valid_loader)
         logdir_valid.write(f"{epoch}, {cum_loss}\n")
+        logdir_valid.flush()
+        logdir_valid.close()
     print('Valid Epoch: {} \tMinimum loss {}'.format(
         min_epoch, min_valid_loss))

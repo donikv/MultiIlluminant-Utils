@@ -133,7 +133,7 @@ def get_test_augmentation(x: int = 320, y: int = 640):
     """Add paddings to make image shape divisible by 32"""
     test_transform = [
         albu.Resize(x, y),
-        albu.HueSaturationValue(0, (70, 70), (-20, -20), always_apply=True),
+        albu.HueSaturationValue(0, (30, 30), (0, 0), always_apply=True),
     ]
     return albu.Compose(test_transform, additional_targets={"image2": "image"})
 

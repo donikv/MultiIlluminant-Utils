@@ -14,7 +14,10 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     """
 
     if dataset == 'test':
-        images_data_folder = f"{path}/{folder}/img_corrected_1"
+        if use_corrected:
+            images_data_folder = f"{path}/{folder}/img_corrected_1"
+        else:
+            images_data_folder = f"{path}/{folder}/images"
         image_path = os.path.join(images_data_folder, x)
         img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
         if folder.endswith('nikon'):
