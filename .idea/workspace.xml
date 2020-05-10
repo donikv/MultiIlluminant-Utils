@@ -4,12 +4,6 @@
     <list default="true" id="33a975ea-3228-47db-9bd7-d976cfc0e35f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SegmentationModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/SegmentationModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_graphs.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_graphs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/dataset_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
@@ -84,7 +78,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.MultiIlluminantConv">
+  <component name="RunManager" selected="Python.SegmentationModel">
     <configuration name="EnsambleModel" type="PythonConfigurationType" factoryName="Python">
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -152,9 +146,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -260,8 +251,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.plot_graphs" />
         <item itemvalue="Python.SegmentationModel" />
+        <item itemvalue="Python.plot_graphs" />
         <item itemvalue="Python.RegressionModel" />
         <item itemvalue="Python.make_mask" />
         <item itemvalue="Python.pretrain_segmentation_model" />
@@ -338,7 +329,7 @@
       <workItem from="1588922829294" duration="2619000" />
       <workItem from="1589010242623" duration="6287000" />
       <workItem from="1589035781643" duration="560000" />
-      <workItem from="1589094185555" duration="3349000" />
+      <workItem from="1589094185555" duration="3602000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -508,7 +499,14 @@
       <option name="project" value="LOCAL" />
       <updated>1588778411660</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Adds more testing">
+      <created>1589123522567</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1589123522567</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -560,7 +558,8 @@
     <MESSAGE value="Adds training for different types of networks and their testing" />
     <MESSAGE value="Adds option to test the model with real images" />
     <MESSAGE value="Adds methods for results processing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds methods for results processing" />
+    <MESSAGE value="Adds more testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds more testing" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586181792108" />

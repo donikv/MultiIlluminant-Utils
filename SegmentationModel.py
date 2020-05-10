@@ -29,7 +29,7 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 
 if __name__ == '__main__':
 
-    use_custom = False
+    use_custom = True
 
     model, preprocessing_fn = get_model(num_classes=1, in_channels=2, use_sigmoid=False, type='unet')
     if use_custom:
@@ -64,13 +64,13 @@ if __name__ == '__main__':
 
     num_epochs = 1000
     log_interval = 5
-    model_name = 'unet-efficientnet-b0-gt-best-valid-cube6-06_5-log'
+    model_name = 'unet-custom-gt-best-valid-cube6-06_5-log'
     logdir = f"./logs/{model_name}"
 
     # model, criterion, optimizer
     optimizer = torch.optim.Adam([
-        {'params': model.decoder.parameters(), 'lr': 5e-3},
-        {'params': model.encoder.parameters(), 'lr': 5e-4},
+        {'params': model.decoder.parameters(), 'lr': 1e-2},
+        {'params': model.encoder.parameters(), 'lr': 1e-3},
     ])
     # optimizer = torch.optim.Adam(model.parameters(), lr=7e-2)
     scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
