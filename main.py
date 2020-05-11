@@ -5,6 +5,7 @@ import segmentation_models_pytorch as smp
 import HypNet
 from Dataset import MIDataset, MIPatchedDataset
 from torch.utils.data.dataloader import DataLoader
+import os
 
 from Models import get_model, get_custom_model
 from dataset_utils import visualize, calculate_histogram, plot_histograms, cluster, visualize_tensor, \
@@ -42,7 +43,7 @@ def test_custom_model(path, images_path, dataset):
     # loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     model.load_state_dict(torch.load(path))
 
-    test(model, dataset, images_path, None, True, use_corrected, path)
+    test(model, dataset, images_path, None, True, use_corrected, path, True)
 
     # dl = ls.DiceLoss()
     # for batch_idx, (data, mask, gt) in enumerate(loader):
@@ -63,16 +64,17 @@ def test_model(path, images_path, type, dataset):
     model.eval()
     model.load_state_dict(torch.load(path))
     preproc = None if not path.endswith('preproc') else get_preprocessing(preproc)
-    test(model, dataset, images_path, preproc, use_log, use_corrected, path)
+    test(model, dataset, images_path, preproc, use_log, use_corrected, path, False)
 
 
-def test(model, dataset, images_path, preproc, use_log, use_corrected, path):
+def test(model, dataset, images_path, preproc, use_log, use_corrected, path, custom):
     datatype = dataset
+    dt = 'test'
     folder = None
     aug = get_validation_augmentation() if use_log else get_test_augmentation()
     if dataset == 'crf':
-        folder = 'dataset_crf/realworld'
-        dataset = MIDataset(datatype='test', folder=folder, special_folder=images_path,
+        folder = 'dataset_crf/valid'
+        dataset = MIDataset(datatype=dt, folder=folder, special_folder=images_path,
                             transforms=aug, preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='crf', log_transform=use_log)
 
@@ -83,7 +85,7 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path):
                             , use_mask=False, use_corrected=use_corrected, dataset='test', log_transform=use_log)
 
     else:
-        dataset = MIDataset(datatype='test', folder='dataset_relighted/valid', special_folder=images_path,
+        dataset = MIDataset(datatype=dt, folder='dataset_relighted/valid', special_folder=images_path,
                         transforms=get_validation_augmentation(), preprocessing=preproc
                         , use_mask=False, use_corrected=use_corrected, dataset='cube', log_transform=use_log)
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
@@ -96,19 +98,28 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path):
     def sigmoid(x):
         return 1 / (1 + torch.exp(-x))
 
-    if datatype == 'test':
-        for idx,  (name, data, gs) in enumerate(loader):
-            p_mask, label = model(data)
+
+    def save_mask(name, mask):
+        image, _, _ = load_img_and_gt_crf_dataset(name, folder=folder, dataset=datatype)
+        fx = image.shape[1] / p_mask.shape[3]
+        fy = image.shape[0] / p_mask.shape[2]
+        rot_mask = cv2.resize(mask_to_image(to_np_img(mask)), (0, 0), fx=fx, fy=fy)
+        if rot_mask.shape[0] > rot_mask.shape[1]:
+            rot_mask = rot_mask.transpose((1, 0, 2))
+        if not os.path.exists(f'data/{folder}/pmasks/'):
+            os.mkdir(f'data/{folder}/pmasks/')
+        cv2.imwrite(f'data/{folder}/pmasks/{name}', rot_mask)
+
+
+    if datatype == 'test' or dt == 'test':
+        for idx, (name, data, gs) in enumerate(loader):
+            if not custom:
+                p_mask, label = model(data)
+            else:
+                p_mask = model(data)
             sig_mask = sigmoid(p_mask)
             p_mask = torch.clamp(p_mask, 0, 1)
-            name = name[0]
-            image = load_img_and_gt_crf_dataset(name, folder=folder, dataset=datatype)
-            fx = image.shape[1] / p_mask.shape[3]
-            fy = image.shape[0] / p_mask.shape[2]
-            rot_mask = cv2.resize(mask_to_image(to_np_img(sig_mask)), (0, 0), fx=fx, fy=fy)
-            if rot_mask.shape[0] > rot_mask.shape[1]:
-                rot_mask = rot_mask.transpose((1, 0, 2))
-            cv2.imwrite(f'data/{folder}/masks/{name}', rot_mask)
+            save_mask(name[0], sig_mask)
             plot(data, gs, sig_mask, p_mask, use_log, use_mixture=True)
             torch.cuda.empty_cache()
         return
@@ -117,10 +128,14 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path):
     for batch_idx, (data, mask, gt) in enumerate(loader):
         data, gs = data
         gt, gt_gs = gt
-        p_mask, label = model(data)
+        if not custom:
+            p_mask, label = model(data)
+        else:
+            p_mask = model(data)
         p_mask_clamp = torch.clamp(p_mask, 0, 1)
         sig_mask = sigmoid(p_mask)
         plot(data, gs, mask, sig_mask, use_log, use_mixture=True)
+        save_mask(str(batch_idx))
         dc = dice(mask, p_mask_clamp) if use_corrected else max(dice(mask, p_mask_clamp), dice(1-mask, p_mask_clamp))
         dices.append(dc.item())
         dc_sig = dice(mask, sig_mask) if use_corrected else max(dice(mask, sig_mask), dice(1-mask, sig_mask))
@@ -188,13 +203,13 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
 
 
 type = 'unet'
-dataset = 'test'
-# test_model('models/unet-efficientnet-b0-gt-best-valid-cube6-06_5-log', '', type=type, dataset=dataset)
+dataset = 'crf'
+test_model('models/unet-efficientnet-b0-gt-best-valid-cube6-06_5-log', '', type=type, dataset=dataset)
 # print('Testing model 2')
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x', '', type=type, dataset=dataset)
 # print('Testing model 3')
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube-comb-04_5', '', type=type, dataset=dataset)
-test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom2-100', '', dataset=dataset)
+# test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom2', '', dataset=dataset)
 exit(0)
 # test_hyp_sel_hdr(['./models/ensemble-model-hyp', './models/ensemble-model-sel'], '', use_log=False)
 # exit(0)

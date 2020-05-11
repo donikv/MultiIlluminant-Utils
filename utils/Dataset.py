@@ -44,14 +44,15 @@ class MIDataset(Dataset):
         self.folder = folder
 
     def __getitem__(self, idx):
-        if self.dataset == 'test':
+        if self.datatype == 'test':
             return self.get_test_item(idx)
         else:
             return self.get_train_item(idx)
 
     def get_test_item(self, idx):
         image_name = self.image_names[idx]
-        image = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, dataset=self.dataset, load_any_mask=self.load_any_mask)
+        image, _, _ = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
+                                                      use_corrected=self.use_corrected, dataset=self.dataset, load_any_mask=self.load_any_mask)
         gs = []
         if self.log_transform:
             image, gs = transform_to_log(image)

@@ -25,7 +25,7 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if img.shape[0] > img.shape[1] and rotate:
             img = img.transpose((1, 0, 2))
-        return img
+        return img, None, None
 
 
     images = 'srgb8bit' if dataset == 'crf' else 'images'
