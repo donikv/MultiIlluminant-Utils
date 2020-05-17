@@ -8,10 +8,10 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
 
-from CubeDataset import CubeDataset
-from UNet import Unet
-from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
-from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+from utils.CubeDataset import CubeDataset
+from utils.UNet import Unet
+from utils.dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
+from utils.transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 import numpy as np
 
 if __name__ == '__main__':
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-2)
     criterion1 = torch.nn.MSELoss()
 
-    from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
+    from utils.dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
     def plot(data, gt, out_a, gs, gt_gs):
         gs = gs[0]
         gt_gs = np.array([[np.array(gt_gs[0]) for i in range(64)] for j in range(64)])

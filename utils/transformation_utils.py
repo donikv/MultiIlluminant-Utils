@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from dataset_utils import to_np_img
+from utils.dataset_utils import to_np_img
 
 
 def color_correct(img, canonical_ill, unknown_ill=None):

@@ -4,8 +4,8 @@ from torch.optim import optimizer
 import torch.nn.functional as F
 import numpy as np
 
-from Models import get_model
-from dataset_utils import get_patches_for_image, combine_patches_into_image
+from utils.Models import get_model
+from utils.dataset_utils import get_patches_for_image, combine_patches_into_image
 
 
 class HypNet(nn.Module):

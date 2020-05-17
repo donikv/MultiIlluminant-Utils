@@ -9,10 +9,10 @@ from albumentations import pytorch as AT
 from torch.utils.data import Dataset
 import numpy as np
 
-from dataset_utils import load_img_and_gt_crf_dataset, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index, \
+from utils.dataset_utils import load_img_and_gt_crf_dataset, visualize, get_mask_from_gt, mask_to_image, get_patch_with_index, \
     load_img_hdr_dataset
-from load_mat import get_gt_for_image
-from transformation_utils import transform_to_log
+from utils.load_mat import get_gt_for_image
+from utils.transformation_utils import transform_to_log
 
 
 class HDRDataset(Dataset):

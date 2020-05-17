@@ -6,11 +6,11 @@ import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-from Dataset import MIDataset, MIPatchedDataset
-from Losses import BCEDiceLoss
-from Models import get_model, get_custom_model
-from dataset_utils import visualize_tensor, to_np_img, transform_from_log, visualize, mask_to_image
-from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+from utils.Dataset import MIDataset, MIPatchedDataset
+from utils.Losses import BCEDiceLoss
+from utils.Models import get_model, get_custom_model
+from utils.dataset_utils import visualize_tensor, to_np_img, transform_from_log, visualize, mask_to_image
+from utils.transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 import numpy as np
 
 
@@ -30,8 +30,9 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 if __name__ == '__main__':
 
     use_custom = False
-
-    model, preprocessing_fn = get_model(num_classes=3, use_sigmoid=False, type='unet')
+    use_log = True
+    in_channels = 2 if use_log else 3
+    model, preprocessing_fn = get_model(num_classes=3, use_sigmoid=False, type='unet', in_channels=in_channels)
     if use_custom:
         model = get_custom_model(num_classes=1, use_sigmoid=False)
         preprocessing_fn = None
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     num_workers = 0
     bs = 2
     use_mask = True
-    use_log = use_custom and True
+
     use_corrected = False
     dataset = 'cube'
     folder = 'dataset_relighted/complex3'

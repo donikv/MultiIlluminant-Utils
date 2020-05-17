@@ -7,11 +7,11 @@ from torch.utils.data.dataloader import DataLoader
 import albumentations as albu
 from albumentations import pytorch as AT
 import numpy as np
-import dataset_utils as du
+import utils.dataset_utils as du
 import multiprocessing as mp
-import transformation_utils as tu
+import utils.transformation_utils as tu
 
-from Dataset import MIDataset
+from utils.Dataset import MIDataset
 
 def create_corrected_image(img: np.ndarray, gt: np.ndarray, mask: np.ndarray):
     result = [(i,j) if (mask[i][j] == 0).all() else None for j in range(mask.shape[1]) for i in range(mask.shape[0])]

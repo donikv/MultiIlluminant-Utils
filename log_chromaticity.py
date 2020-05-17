@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 import os
 import matplotlib.pyplot as plt
-import dataset_utils as du
-from transformation_utils import adjust_gamma
+import utils.dataset_utils as du
+from utils.transformation_utils import adjust_gamma
 
 root = r'.\path\to\root'
 root = r'my_img.jpg'

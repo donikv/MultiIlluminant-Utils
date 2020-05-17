@@ -3,10 +3,10 @@ import numpy as np
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
-import dataset_utils as du
-from HDRDataset import HDRPatchedDataset
-from load_mat import get_gt_for_image
-from transformation_utils import color_correct_fast, transform_from_log, adjust_gamma, transform_to_log
+import utils.dataset_utils as du
+from utils.HDRDataset import HDRPatchedDataset
+from utils.load_mat import get_gt_for_image
+from utils.transformation_utils import color_correct_fast, transform_from_log, adjust_gamma, transform_to_log
 
 if __name__ == '__main__':
 

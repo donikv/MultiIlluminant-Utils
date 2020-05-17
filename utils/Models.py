@@ -1,5 +1,5 @@
 import segmentation_models_pytorch as smp
-from UNet import Unet
+from utils.UNet import Unet
 
 
 def get_model(num_classes=2, use_sigmoid=False, type='unet', in_channels=3):

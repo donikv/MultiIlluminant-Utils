@@ -6,11 +6,11 @@ import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-from Dataset import MIDataset, MIPatchedDataset
-from Losses import BCEDiceLoss
-from Models import get_model, get_custom_model
-from dataset_utils import visualize_tensor, to_np_img, transform_from_log, visualize, mask_to_image
-from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+from utils.Dataset import MIDataset, MIPatchedDataset
+from utils.Losses import BCEDiceLoss
+from utils.Models import get_model, get_custom_model
+from utils.dataset_utils import visualize_tensor, to_np_img, transform_from_log, visualize, mask_to_image
+from utils.transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 import numpy as np
 
 
@@ -36,8 +36,8 @@ if __name__ == '__main__':
         model = get_custom_model(num_classes=1, use_sigmoid=False)
         preprocessing_fn = None
         model.load_state_dict(torch.load('./models/unet-pretrained-cube'))
-    # dict = torch.load('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x')
-    # model.load_state_dict(dict)
+    dict = torch.load('models/unet-custom-gt-best-valid-cube6-11_5-log')
+    model.load_state_dict(dict)
     num_workers = 0
     bs = 4
     use_mask = False
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     num_epochs = 1000
     log_interval = 5
-    model_name = 'unet-custom-gt-best-valid-cube6-06_5-log'
+    model_name = 'unet-custom-gt-best-valid-cube6-11_5-log'
     logdir = f"./logs/{model_name}"
 
     # model, criterion, optimizer
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # -- TRAINING --
     min_valid_loss = 0
     min_epoch = 0
-    starting_epoch = 0
+    starting_epoch = 48
     for epoch in range(num_epochs):
         logdir_train = open(logdir + "train", 'a')
         logdir_valid = open(logdir + "valid", 'a')
@@ -110,23 +110,24 @@ if __name__ == '__main__':
         logdir_train.close()
         cum_loss = 0
         for batch_idx, (data, mask, gt) in enumerate(valid_loader):
-            data, gs = data
-            if use_custom:
-                p_mask = model(data)
-            else:
-                p_mask, label = model(data)
+            with torch.no_grad():
+                data, gs = data
+                if use_custom:
+                    p_mask = model(data)
+                else:
+                    p_mask, label = model(data)
 
-            optimizer.zero_grad()
-            loss = criterion2(p_mask, mask).mean().detach()
-            cum_loss += loss
-            #         loss += criterion2(label, )
-            if batch_idx % log_interval == 0:
-                print('Valid Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    epoch, batch_idx * len(data), len(valid_loader.dataset),
-                           100. * batch_idx / len(valid_loader), loss.item()))
-                if epoch % 20 == 0:
-                    plot(data, gs, mask, p_mask, use_log)
-            torch.cuda.empty_cache()
+                optimizer.zero_grad()
+                loss = criterion2(p_mask, mask).mean().detach()
+                cum_loss += loss.item()
+                #         loss += criterion2(label, )
+                if batch_idx % log_interval == 0:
+                    print('Valid Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                        epoch, batch_idx * len(data), len(valid_loader.dataset),
+                               100. * batch_idx / len(valid_loader), loss.item()))
+                    if epoch % 20 == 0:
+                        plot(data, gs, mask, p_mask, use_log)
+                torch.cuda.empty_cache()
         print('Valid Epoch: {} \tCumulative loss {} \tMinimum loss {}'.format(
             epoch, cum_loss, min_valid_loss))
         if epoch == starting_epoch:

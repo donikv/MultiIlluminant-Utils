@@ -20,7 +20,7 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
             images_data_folder = f"{path}/{folder}/images"
         image_path = os.path.join(images_data_folder, x)
         img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-        if folder.endswith('nikon'):
+        if folder.endswith('nikon_png'):
             img = (img / (2 ** 16) * 255).astype(np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if img.shape[0] > img.shape[1] and rotate:
@@ -40,8 +40,10 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     image_path = os.path.join(images_data_folder, x)
     gt_path = os.path.join(gt_data_folder, x)
     mask_path = os.path.join(mask_data_folder, x)
-    img = cv2.imread(image_path)
+    img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    if dataset == 'crf' and not use_corrected:
+        img = (img / 4096 * 255).astype(np.uint8)
     if use_corrected:
         gt = []
     else:

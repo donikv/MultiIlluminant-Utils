@@ -6,14 +6,14 @@ from pytorch_metric_learning import losses
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-import HypNet
-from Dataset import MIDataset, MIPatchedDataset
-from Losses import BCEDiceLoss, angular_loss
-from Models import get_model
-from dataset_utils import visualize_tensor
+import utils.HypNet as HypNet
+from utils.Dataset import MIDataset, MIPatchedDataset
+from utils.Losses import BCEDiceLoss, angular_loss
+from utils.Models import get_model
+from utils.dataset_utils import visualize_tensor
 import numpy as np
 import cv2
-from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+from utils.transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 
 use_log = True
 in_channels = 2 if use_log else 3

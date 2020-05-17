@@ -7,13 +7,13 @@ from pytorch_metric_learning import losses
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data.dataloader import DataLoader
 
-import HypNet
-from Dataset import MIDataset, MIPatchedDataset
-from HDRDataset import HDRDataset, HDRPatchedDataset
-from Losses import BCEDiceLoss, angular_loss
-from Models import get_model
-from dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
-from transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
+import utils.HypNet as HypNet
+from utils.Dataset import MIDataset, MIPatchedDataset
+from utils.HDRDataset import HDRDataset, HDRPatchedDataset
+from utils.Losses import BCEDiceLoss, angular_loss
+from utils.Models import get_model
+from utils.dataset_utils import visualize_tensor, transform_from_log, visualize, to_np_img
+from utils.transformation_utils import get_training_augmentation, get_preprocessing, get_validation_augmentation
 import numpy as np
 
 use_log = True
