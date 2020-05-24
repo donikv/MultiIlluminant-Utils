@@ -1,3 +1,5 @@
+import statistics
+
 
 def quartiles(dataPoints):
     sortedPoints = sorted(dataPoints)
@@ -23,3 +25,9 @@ def median(dataPoints):
 def trimean(dataPoints):
     q1, q2, q3 = quartiles(dataPoints)
     return (q1 + 2*q2 + q3) / 4
+
+
+def variance(dataPoints):
+    return statistics.variance(dataPoints)
+
+# def ttest(dataPoints, p_val):

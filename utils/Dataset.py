@@ -102,7 +102,7 @@ class MIDataset(Dataset):
                 preprocessed = self.preprocessing(image=img, mask=mask, image2=gt)
             img = preprocessed['image']
             mask = preprocessed['mask']
-            gt = preprocessed['gt']
+            gt = preprocessed['image2']
 
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")

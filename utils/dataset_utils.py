@@ -8,12 +8,13 @@ import torch
 from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
 from kmodes.kmodes import KModes
 
+
 def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_mask=True, use_corrected=False, load_any_mask=True, dataset='crf', rotate=True):
     """
     Return image based on image name and folder.
     """
 
-    if dataset == 'test':
+    if dataset.endswith('test'):
         if use_corrected:
             images_data_folder = f"{path}/{folder}/img_corrected_1"
         else:
@@ -42,8 +43,14 @@ def load_img_and_gt_crf_dataset(x, path='./data', folder='dataset_crf/lab', use_
     mask_path = os.path.join(mask_data_folder, x)
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    if dataset == 'crf' and not use_corrected:
-        img = (img / 4096 * 255).astype(np.uint8)
+    if dataset == 'crf' and not use_corrected and images == 'img':
+        img = (img / (2**14) * 255).astype(np.uint8)
+        gamma = 2
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255
+                          for i in np.arange(0, 256)]).astype("uint8")
+        # apply gamma correction using the lookup table
+        img = cv2.LUT(img, table)
     if use_corrected:
         gt = []
     else:

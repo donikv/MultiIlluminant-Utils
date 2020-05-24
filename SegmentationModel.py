@@ -29,15 +29,15 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x):
 
 if __name__ == '__main__':
 
-    use_custom = True
+    use_custom = False
 
-    model, preprocessing_fn = get_model(num_classes=1, in_channels=2, use_sigmoid=False, type='unet')
+    model, preprocessing_fn = get_model(num_classes=1, in_channels=2, use_sigmoid=False, type='fpn')
     if use_custom:
         model = get_custom_model(num_classes=1, use_sigmoid=False)
         preprocessing_fn = None
         model.load_state_dict(torch.load('./models/unet-pretrained-cube'))
-    dict = torch.load('models/unet-custom-gt-best-valid-cube6-11_5-log')
-    model.load_state_dict(dict)
+    # dict = torch.load('models/unet-custom-gt-best-valid-cube6-11_5-log')
+    # model.load_state_dict(dict)
     num_workers = 0
     bs = 4
     use_mask = False
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     num_epochs = 1000
     log_interval = 5
-    model_name = 'unet-custom-gt-best-valid-cube6-11_5-log'
+    model_name = 'fpn-effb0-gt-best-valid-cube6-18_5-log'
     logdir = f"./logs/{model_name}"
 
     # model, criterion, optimizer
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # -- TRAINING --
     min_valid_loss = 0
     min_epoch = 0
-    starting_epoch = 48
+    starting_epoch = 0
     for epoch in range(num_epochs):
         logdir_train = open(logdir + "train", 'a')
         logdir_valid = open(logdir + "valid", 'a')
