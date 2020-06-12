@@ -118,7 +118,7 @@ def get_training_augmentation(x: int = 320, y: int = 640):
         albu.Resize(x, y),
         # albu.Normalize(always_apply=True),
     ]
-    return albu.Compose(train_transform, additional_targets={"image2": "image"})
+    return albu.Compose(train_transform, additional_targets={"image2": "image", "image3": "image", "image4": "image"})
 
 
 def get_validation_augmentation(x: int = 320, y: int = 640):
@@ -126,7 +126,7 @@ def get_validation_augmentation(x: int = 320, y: int = 640):
     test_transform = [
         albu.Resize(x, y)
     ]
-    return albu.Compose(test_transform, additional_targets={"image2": "image"})
+    return albu.Compose(test_transform, additional_targets={"image2": "image", "image3": "image", "image4": "image"})
 
 
 def get_test_augmentation(x: int = 320, y: int = 640):
@@ -135,7 +135,7 @@ def get_test_augmentation(x: int = 320, y: int = 640):
         albu.Resize(x, y),
         albu.HueSaturationValue(0, (30, 30), (0, 0), always_apply=True),
     ]
-    return albu.Compose(test_transform, additional_targets={"image2": "image"})
+    return albu.Compose(test_transform, additional_targets={"image2": "image", "image3": "image", "image4": "image"})
 
 
 def get_preprocessing(preprocessing_fn):
@@ -148,11 +148,12 @@ def get_preprocessing(preprocessing_fn):
         transform: albumentations.Compose
 
     """
-
+    if preprocessing_fn is None:
+        return None
     _transform = [
         albu.Lambda(image=preprocessing_fn),
     ]
-    return albu.Compose(_transform, additional_targets={"image2": "image"})
+    return albu.Compose(_transform, additional_targets={"image2": "image", "image3": "image", "image4": "image"})
 
 
 def to_tensor(x, **kwargs):

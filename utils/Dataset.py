@@ -82,31 +82,33 @@ class MIDataset(Dataset):
             image, gs = transform_to_log(image)
             gs = np.expand_dims(gs, axis=2)
             gt, gt_gs = transform_to_log(gt)
-            inputs = {'image': image, 'mask': mask, 'image2': gs, 'gt_gs': gt_gs, 'gt': gt}
+            gt_gs = np.expand_dims(gt_gs, axis=2)
+            inputs = {'image': image, 'mask': mask, 'image2': gs, 'image4': gt_gs, 'image3': gt}
             augmented = self.transforms(**inputs)
             gs = augmented['image2']
             gs = gs.squeeze()
-            gt_gs = augmented['gt_gs']
+            gt_gs = augmented['image4']
+            gt_gs = gt_gs.squeeze()
         else:
-            inputs = {'image': image, 'mask': mask, 'image2': gt}
+            inputs = {'image': image, 'mask': mask, 'image3': gt}
             augmented = self.transforms(**inputs)
         img = augmented['image']
         mask = augmented['mask']
-        gt = augmented['image2']
+        gt = augmented['image3']
         if self.preprocessing:
             if self.log_transform:
-                preprocessed = self.preprocessing(image=img, mask=mask, gt=gt, image2=gs, gt_gs=gt_gs)
+                preprocessed = self.preprocessing(image=img, mask=mask, image3=gt, image2=gs, image4=gt_gs)
                 gs = preprocessed['image2']
-                gt_gs = preprocessed['gt_gs']
+                gt_gs = preprocessed['image4']
             else:
                 preprocessed = self.preprocessing(image=img, mask=mask, image2=gt)
             img = preprocessed['image']
             mask = preprocessed['mask']
-            gt = preprocessed['image2']
+            gt = preprocessed['image3']
 
         img = torch.tensor(img.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         gt = torch.tensor(gt.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
-        mask = np.array([[(np.array([1]) if pixel[0] > 128 else np.array([0])) for pixel in row] for row in mask])
+        mask = np.expand_dims(np.where(mask > 128, np.ones(1), np.zeros(1))[:, :, 0], -1)
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         return (img, gs), \
                mask, \

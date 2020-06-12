@@ -3,7 +3,7 @@ from utils.UNet import Unet
 
 
 def get_model(num_classes=2, use_sigmoid=False, type='unet', in_channels=3):
-    ENCODER = 'efficientnet-b0'
+    ENCODER = 'efficientnet-b2'
     ENCODER_WEIGHTS = 'imagenet'
     DEVICE = 'cuda'
 

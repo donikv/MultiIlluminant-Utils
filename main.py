@@ -35,7 +35,7 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x, use_mixt
 
 
 def test_custom_model(path, images_path, dataset):
-    use_corrected = True
+    use_corrected = False
     model = get_custom_model(num_classes=1, use_sigmoid=False)
     model.eval()
     # dataset = MIDataset(datatype='test', folder='dataset_relighted', special_folder=images_path,
@@ -74,7 +74,7 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
     path = './data'
     aug = get_validation_augmentation() if use_log else get_test_augmentation()
     if dataset == 'crf':
-        folder = 'dataset_crf/realworld'
+        folder = 'dataset_crf/lab'
         dataset = MIDataset(datatype=dt, folder=folder, special_folder=images_path,
                             transforms=aug, preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='crf', log_transform=use_log)
@@ -86,8 +86,8 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
                             , use_mask=False, use_corrected=use_corrected, dataset='test', log_transform=use_log)
 
     elif dataset == 'projector_test':
-        folder = 'projector_test/projector2/pngs/both'
-        path = '../CubeDataset'
+        folder = 'both'
+        path = 'G:\\fax\\diplomski\\Datasets\\third\\ambient'
         dataset = MIDataset(path=path, datatype='test', folder=folder, special_folder=images_path,
                             transforms=aug, preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='test', log_transform=use_log)
@@ -121,7 +121,7 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
             rot_mask = cv2.flip(rot_mask, -1)
             rot_mask = cv2.flip(rot_mask, 0)
             rot_mask = cv2.rotate(rot_mask, cv2.ROTATE_180)
-        fld = f'{path}/{folder}/pmasks2{"-cor" if use_corrected else ""}{"-custom" if custom else ""}'
+        fld = f'{path}/{folder}/pmasks6{"-cor" if use_corrected else ""}{"-custom" if custom else ""}'
         if not os.path.exists(fld):
             os.mkdir(fld)
         cv2.imwrite(f'{fld}/{name}', rot_mask)
@@ -135,7 +135,7 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
                 p_mask = model(data)
             sig_mask = sigmoid(p_mask)
             p_mask = torch.clamp(p_mask, 0, 1)
-            save_mask(name[0], sig_mask)
+            # save_mask(name[0], sig_mask)
             plot(data, gs, sig_mask, p_mask, use_log, use_mixture=True)
             torch.cuda.empty_cache()
         return
@@ -150,7 +150,7 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
             p_mask = model(data)
         p_mask_clamp = torch.clamp(p_mask, 0, 1)
         sig_mask = sigmoid(p_mask)
-        # plot(data, gs, mask, sig_mask, use_log, use_mixture=True)
+        plot(data, gs, mask, sig_mask, use_log, use_mixture=True)
         # save_mask(str(batch_idx), sig_mask)
         dc = dice(mask, p_mask_clamp) if use_corrected else max(dice(mask, p_mask_clamp), dice(1-mask, p_mask_clamp))
         dices.append(dc.item())
@@ -227,8 +227,9 @@ dataset = 'projector_test'
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube3-26_4-x', '', type=type, dataset=dataset)
 # print('Testing model 3')
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube-comb-04_5', '', type=type, dataset=dataset)
-test_model('models/unet-effb0-gt-best-valid-cube-comb-15_5-log', '', type=type, dataset=dataset) # NAUCIO BRIGHTNESE?
+# test_model('models/unet-effb0-gt-best-valid-cube-comb-15_5-log', '', type=type, dataset=dataset) # NAUCIO BRIGHTNESE?
 # test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom2', '', dataset=dataset)
+test_model('models/reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_9000-03_6-log', '', type=type, dataset=dataset)
 
 
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube', '', type=type, dataset=dataset)
