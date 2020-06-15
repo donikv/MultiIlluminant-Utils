@@ -14,7 +14,7 @@ from utils.transformation_utils import get_training_augmentation, get_preprocess
 import numpy as np
 
 
-def plot(data, gs, gt, p_mask, gt_gs, use_log, custom_transform=lambda x: x):
+def plot(data, gs, gt, p_mask, use_log, custom_transform=lambda x: x):
     d = to_np_img(data[0])
     gt = to_np_img(gt[0])
     p_mask = to_np_img(p_mask[0])
@@ -22,23 +22,20 @@ def plot(data, gs, gt, p_mask, gt_gs, use_log, custom_transform=lambda x: x):
         d = cv2.split(d)
         d = np.dstack((d[0], d[1]))
         gs = gs[0]
-        gt_gs = gt_gs[0]
-        d, gt = transform_from_log(d, gs), transform_from_log(gt, gt_gs)
-        p_mask = transform_from_log(p_mask, gs)
+        d = transform_from_log(d, gs)
     if d.max() > 1:
         d = d.astype(int)
-        gt = gt.astype(int)
-        p_mask = p_mask.astype(int)
-    mask = to_np_img(gt)
-    p_mask = custom_transform(to_np_img(p_mask))
-    visualize(d, p_mask, mask=mask)
+        gt = gt.astype(np.uint8)
+        p_mask = np.clip(p_mask, 0, 255).astype(np.uint8)
+    p_mask = custom_transform(cv2.cvtColor(to_np_img(p_mask), cv2.COLOR_LUV2RGB))
+    visualize(d, p_mask, mask=gt)
 
 if __name__ == '__main__':
 
     use_custom = False
     use_log = True
     in_channels = 2 if use_log else 3
-    model, preprocessing_fn = get_model(num_classes=2, use_sigmoid=False, type='unet', in_channels=in_channels)
+    model, preprocessing_fn = get_model(num_classes=3, use_sigmoid=False, type='unet', in_channels=in_channels)
     if use_custom:
         model = get_custom_model(num_classes=1, use_sigmoid=False)
         preprocessing_fn = None
@@ -46,7 +43,7 @@ if __name__ == '__main__':
     # dict = torch.load('./models/reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_9000-03_6-log')
     # model.load_state_dict(dict)
     num_workers = 0
-    bs = 4
+    bs = 8
     use_gt_mask = True
 
     use_corrected = False
@@ -72,19 +69,25 @@ if __name__ == '__main__':
 
     num_epochs = 1000
     log_interval = 5
-    model_name = 'reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_9000-03_6-log'
+    model_name = 'reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_15000-15_6-log'
     logdir = f"./logs/{model_name}"
     logdir_train = open(logdir+"train", 'w')
     logdir_valid = open(logdir+"valid", 'w')
 
     # model, criterion, optimizer
     optimizer = torch.optim.Adam([
-        {'params': model.decoder.parameters(), 'lr': 1e-2},
-        {'params': model.encoder.parameters(), 'lr': 1e-3},
+        {'params': model.decoder.parameters(), 'lr': 6e-3},
+        {'params': model.encoder.parameters(), 'lr': 6e-4},
     ])
     # optimizer = torch.optim.Adam(model.parameters(), lr=7e-2)
     scheduler = ReduceLROnPlateau(optimizer, factor=0.15, patience=2)
     criterion = torch.nn.MSELoss()
+    # criterion2 = torch.nn.CosineSimilarity()
+    #
+    # def ang_loss(x,y):
+    #     a = criterion2(x, y)
+    #     a = torch.nn
+
 
     # -- TRAINING --
     min_valid_loss = 0
@@ -93,15 +96,13 @@ if __name__ == '__main__':
     for epoch in range(start_epoch, num_epochs):
         cum_train_loss = 0
         for batch_idx, (data, mask, gt) in enumerate(train_loader):
-            break
             data, gs = data
-            gt, gt_gs = gt
             if use_custom:
                 p_mask = model(data)
             else:
                 p_mask, label = model(data)
             optimizer.zero_grad()
-            loss = criterion(p_mask, gt).mean()
+            loss = criterion(p_mask, gt).mean() #+ criterion2(p_mask, gt).mean()
             #         loss += criterion2(label, )
             loss.backward()
             optimizer.step()
@@ -116,7 +117,6 @@ if __name__ == '__main__':
         for batch_idx, (data, mask, gt) in enumerate(valid_loader):
             with torch.no_grad():
                 data, gs = data
-                gt, gt_gs = gt
                 if use_custom:
                     p_mask = model(data)
                 else:
@@ -131,7 +131,7 @@ if __name__ == '__main__':
                         epoch, batch_idx * len(data), len(valid_loader.dataset),
                                100. * batch_idx / len(valid_loader), loss.item()))
                     if epoch % 20 == 0:
-                        plot(data, gs, gt, p_mask, gt_gs, use_log)
+                        plot(data, gs, gt, p_mask, use_log)
                 torch.cuda.empty_cache()
         print('Valid Epoch: {} \tCumulative loss {} \tMinimum loss {}'.format(
             epoch, cum_loss, min_valid_loss))
@@ -140,8 +140,9 @@ if __name__ == '__main__':
         if min_valid_loss > cum_loss:
             min_valid_loss = cum_loss
             min_epoch = epoch
-            torch.save(model.state_dict(), f'./models/{model_name}')
+            torch.save(model.state_dict(), f'./models/best/{model_name}')
         scheduler.step(cum_loss)
         logdir_valid.write(f"{epoch}, {cum_loss / len(valid_loader)}\n")
+    torch.save(model.state_dict(), f'./models/{model_name}')
     print('Valid Epoch: {} \tMinimum loss {}'.format(
         min_epoch, min_valid_loss))

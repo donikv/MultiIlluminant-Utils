@@ -20,7 +20,7 @@ import cv2
 import utils.statistics_utils as stats
 
 
-def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x, use_mixture=False):
+def plot(data, gs, mask, p_mask, use_log, reg, custom_transform=lambda x: x, use_mixture=False):
     d = to_np_img(data[0])
     if use_log:
         d = cv2.split(d)
@@ -29,8 +29,16 @@ def plot(data, gs, mask, p_mask, use_log, custom_transform=lambda x: x, use_mixt
         d = transform_from_log(d, gs)
     if d.max() > 10:
         d = d.astype(int)
-    mask = mask_to_image(to_np_img(mask[0]))
-    p_mask = custom_transform(mask_to_image(to_np_img(p_mask[0]), use_mixture=use_mixture))
+    if reg:
+        p_mask = to_np_img(p_mask[0])
+        p_mask = p_mask.astype(np.uint8)
+        p_mask = cv2.cvtColor(to_np_img(p_mask), cv2.COLOR_LUV2RGB)
+        mask = to_np_img(mask[0])
+        mask = mask.astype(np.uint8)
+        mask = cv2.cvtColor(to_np_img(mask), cv2.COLOR_LUV2RGB)
+    else:
+        mask = mask_to_image(to_np_img(mask[0]))
+        p_mask = custom_transform(mask_to_image(to_np_img(p_mask[0]), use_mixture=use_mixture))
     visualize(d, p_mask, mask=mask)
 
 
@@ -43,7 +51,7 @@ def test_custom_model(path, images_path, dataset):
     # loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     model.load_state_dict(torch.load(path))
 
-    test(model, dataset, images_path, None, True, use_corrected, path, True)
+    test(model, dataset, images_path, None, True, use_corrected, path, True, False)
 
     # dl = ls.DiceLoss()
     # for batch_idx, (data, mask, gt) in enumerate(loader):
@@ -64,17 +72,27 @@ def test_model(path, images_path, type, dataset):
     model.eval()
     model.load_state_dict(torch.load(path))
     preproc = None if not path.endswith('preproc') else get_preprocessing(preproc)
-    test(model, dataset, images_path, preproc, use_log, use_corrected, path, False)
+    test(model, dataset, images_path, preproc, use_log, use_corrected, path, False, False)
 
 
-def test(model, dataset, images_path, preproc, use_log, use_corrected, path, custom):
+def test_reg_model(path, images_path, type, dataset):
+    use_log = path.endswith('log')
+    num_channels = 2 if use_log else 3
+    model, preproc = get_model(num_classes=3, type=type, in_channels=num_channels)
+    model.eval()
+    model.load_state_dict(torch.load(path))
+    preproc = None if not path.endswith('preproc') else get_preprocessing(preproc)
+    test(model, dataset, images_path, preproc, use_log, False, path, False, True)
+
+
+def test(model, dataset, images_path, preproc, use_log, use_corrected, path, custom, reg):
     datatype = dataset
-    dt = 'test'
+    dt = 'valid'
     folder = None
     path = './data'
     aug = get_validation_augmentation() if use_log else get_test_augmentation()
     if dataset == 'crf':
-        folder = 'dataset_crf/lab'
+        folder = 'dataset_crf/realworld'
         dataset = MIDataset(datatype=dt, folder=folder, special_folder=images_path,
                             transforms=aug, preprocessing=preproc
                             , use_mask=False, use_corrected=use_corrected, dataset='crf', log_transform=use_log)
@@ -121,9 +139,10 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
             rot_mask = cv2.flip(rot_mask, -1)
             rot_mask = cv2.flip(rot_mask, 0)
             rot_mask = cv2.rotate(rot_mask, cv2.ROTATE_180)
-        fld = f'{path}/{folder}/pmasks6{"-cor" if use_corrected else ""}{"-custom" if custom else ""}'
+        fld = f'{path}/{folder}/pmasks6{"-cor" if use_corrected else ""}{"-custom" if custom else ""}{"-reg" if reg else ""}'
         if not os.path.exists(fld):
             os.mkdir(fld)
+        rot_mask = cv2.cvtColor(rot_mask, cv2.COLOR_RGB2BGR)
         cv2.imwrite(f'{fld}/{name}', rot_mask)
 
 
@@ -133,34 +152,38 @@ def test(model, dataset, images_path, preproc, use_log, use_corrected, path, cus
                 p_mask, label = model(data)
             else:
                 p_mask = model(data)
+            if p_mask.max() < 3:
+                p_mask = torch.clamp(p_mask, 0, 1)
             sig_mask = sigmoid(p_mask)
-            p_mask = torch.clamp(p_mask, 0, 1)
-            # save_mask(name[0], sig_mask)
-            plot(data, gs, sig_mask, p_mask, use_log, use_mixture=True)
+            save_mask(name[0], p_mask)
+            plot(data, gs, sig_mask, p_mask, use_log, reg, use_mixture=True)
             torch.cuda.empty_cache()
         return
     dices = []
     sig_dices = []
     for batch_idx, (data, mask, gt) in enumerate(loader):
         data, gs = data
-        gt, gt_gs = gt
         if not custom:
             p_mask, label = model(data)
         else:
             p_mask = model(data)
-        p_mask_clamp = torch.clamp(p_mask, 0, 1)
-        sig_mask = sigmoid(p_mask)
-        plot(data, gs, mask, sig_mask, use_log, use_mixture=True)
         # save_mask(str(batch_idx), sig_mask)
-        dc = dice(mask, p_mask_clamp) if use_corrected else max(dice(mask, p_mask_clamp), dice(1-mask, p_mask_clamp))
-        dices.append(dc.item())
-        dc_sig = dice(mask, sig_mask) if use_corrected else max(dice(mask, sig_mask), dice(1-mask, sig_mask))
-        sig_dices.append(dc_sig.item())
+        if not reg:
+            p_mask_clamp = torch.clamp(p_mask, 0, 1)
+            sig_mask = sigmoid(p_mask)
+            plot(data, gs, mask, sig_mask, use_log, reg, use_mixture=True)
+            dc = dice(mask, p_mask_clamp) if use_corrected else max(dice(mask, p_mask_clamp), dice(1-mask, p_mask_clamp))
+            dices.append(dc.item())
+            dc_sig = dice(mask, sig_mask) if use_corrected else max(dice(mask, sig_mask), dice(1-mask, sig_mask))
+            sig_dices.append(dc_sig.item())
+        else:
+            plot(data, gs, p_mask, gt, use_log, reg, use_mixture=True)
         # print(dc)
-    print(folder, path, use_corrected)
-    print(f'Mean: {np.array(dices).mean()}\t Trimean: {stats.trimean(dices)}\t Median: {stats.median(dices)}')
-    print(f'Mean: {np.array(sig_dices).mean()}\t Trimean: {stats.trimean(sig_dices)}\t Median: {stats.median(sig_dices)}')
-    print('--------------------------------------------------------------------------------')
+    if not reg:
+        print(folder, path, use_corrected)
+        print(f'Mean: {np.array(dices).mean()}\t Trimean: {stats.trimean(dices)}\t Median: {stats.median(dices)}')
+        print(f'Mean: {np.array(sig_dices).mean()}\t Trimean: {stats.trimean(sig_dices)}\t Median: {stats.median(sig_dices)}')
+        print('--------------------------------------------------------------------------------')
 
 
 
@@ -219,7 +242,7 @@ def test_hyp_sel_hdr(paths, images_path, use_log=False):
 
 
 type = 'unet'
-dataset = 'projector_test'
+dataset = 'test'
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube6-06_5-log', '', type=type, dataset=dataset)
 # test_custom_model('./models/unet-custom-gt-best-valid-cube6-11_5-log', '', dataset=dataset)
 # test_model('models/fpn-effb0-gt-best-valid-cube6-18_5-log', '', type='fpn', dataset=dataset)
@@ -229,7 +252,7 @@ dataset = 'projector_test'
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube-comb-04_5', '', type=type, dataset=dataset)
 # test_model('models/unet-effb0-gt-best-valid-cube-comb-15_5-log', '', type=type, dataset=dataset) # NAUCIO BRIGHTNESE?
 # test_custom_model('./models/unet-efficientnet-b0-gt-best-valid-cube3-custom2', '', dataset=dataset)
-test_model('models/reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_9000-03_6-log', '', type=type, dataset=dataset)
+test_reg_model('models/best/reg-unet-efficientnet-b2-gt-best-valid-cube-gradient_12500-14_6-log', '', type=type, dataset=dataset)
 
 
 # test_model('models/unet-efficientnet-b0-gt-best-valid-cube', '', type=type, dataset=dataset)

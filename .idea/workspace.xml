@@ -5,10 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RegressionModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/RegressionModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_graphs.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_graphs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/Dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/transformation_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transformation_utils.py" afterDir="false" />
     </list>
     <list id="ab783781-61c7-48b9-be04-ac58478eb460" name="Adds dataset to git ignore" comment="Adds dataset to git ignore">
       <changelist_data name="Donik" email="donikv@gmail.com" date="1584530986000" />
@@ -47,7 +44,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Rad/images/cubeunetplot.png" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/models/best" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -58,18 +55,19 @@
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\PyCharm 2019.2.4\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_relighted" />
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\test" />
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
-      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\models\best" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\test\whatsapp\masks" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_crf\realworld\img_corrected_1\special" />
       <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_crf\realworld\gt_mask\special" />
-      <recent name="C:\Users\Donik\PycharmProjects\MultiIlluminant-Utils" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\models" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\models\best" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\dataset_relighted" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\data\test" />
+      <recent name="C:\Users\Donik\Dropbox\Donik\fax\10_semestar\Diplomski\MultiIlluminant-Utils\utils" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -111,9 +109,6 @@
       <module name="MultiIlluminantConv" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -363,7 +358,8 @@
       <workItem from="1591642489443" duration="1836000" />
       <workItem from="1591796121343" duration="724000" />
       <workItem from="1591887505647" duration="3793000" />
-      <workItem from="1591963426846" duration="2907000" />
+      <workItem from="1591963426846" duration="8934000" />
+      <workItem from="1592138980839" duration="14231000" />
     </task>
     <task id="LOCAL-00001" summary="Adds losses and makes the segmentation model runnable">
       <created>1584043998844</created>
@@ -575,7 +571,14 @@
       <option name="project" value="LOCAL" />
       <updated>1590341968972</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Adds regression model for color estimation">
+      <created>1591967776033</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1591967776033</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -605,7 +608,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adds regression model" />
     <MESSAGE value="Adds initial implementation of angular loss" />
     <MESSAGE value="Adds HypNet and Unet for hyp selection" />
     <MESSAGE value="Adds small tweaks to utils" />
@@ -630,7 +632,8 @@
     <MESSAGE value="UV log transform" />
     <MESSAGE value="Adds utils to imports" />
     <MESSAGE value="Adds more methods for testing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds more methods for testing" />
+    <MESSAGE value="Adds regression model for color estimation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds regression model for color estimation" />
   </component>
   <component name="WindowStateProjectService">
     <state x="418" y="184" width="1084" height="720" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586181792108" />
@@ -753,14 +756,14 @@
           <option name="timeStamp" value="40" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RegressionModel.py</url>
-          <line>17</line>
-          <option name="timeStamp" value="46" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utils/dataset_utils.py</url>
           <line>125</line>
           <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/utils/dataset_utils.py</url>
+          <line>43</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
         <breakpoint type="python-exception">
           <properties notifyOnlyOnFirst="true" notifyOnTerminate="true" exception="builtins.RuntimeWarning">
@@ -790,7 +793,7 @@
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_hdr.coverage" NAME="load_hdr Coverage Results" MODIFIED="1585732449275" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$plot_graphs.coverage" NAME="plot_graphs Coverage Results" MODIFIED="1588512295770" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$make_mask.coverage" NAME="make_mask Coverage Results" MODIFIED="1587217668155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1591967373534" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$RegressionModel.coverage" NAME="RegressionModel Coverage Results" MODIFIED="1592139045379" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnsambleModel.coverage" NAME="EnsambleModel Coverage Results" MODIFIED="1587395741473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminantConv$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1583760427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$load_mat.coverage" NAME="load_mat Coverage Results" MODIFIED="1585325685325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -798,7 +801,7 @@
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$pretrain_segmentation_model.coverage" NAME="pretrain_segmentation_model Coverage Results" MODIFIED="1587845569846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$EnesmbleModelHDR.coverage" NAME="EnesmbleModelHDR Coverage Results" MODIFIED="1585827724969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$SegmentationModel.coverage" NAME="SegmentationModel Coverage Results" MODIFIED="1588269205949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1590342330425" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$MultiIlluminantConv.coverage" NAME="MultiIlluminantConv Coverage Results" MODIFIED="1592216141178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/MultiIlluminant_Utils$log_chromaticity.coverage" NAME="log_chromaticity Coverage Results" MODIFIED="1585817165541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

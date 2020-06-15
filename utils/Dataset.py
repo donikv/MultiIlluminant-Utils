@@ -75,20 +75,17 @@ class MIDataset(Dataset):
         image_name = self.image_names[idx]
         image, gt, mask = load_img_and_gt_crf_dataset(image_name, self.path, self.folder, use_mask=self.use_mask,
                                                       use_corrected=self.use_corrected, dataset=self.dataset, load_any_mask=self.load_any_mask)
+        gt = cv2.cvtColor(gt, cv2.COLOR_RGB2LUV)
         if not self.load_any_mask:
             mask = gt
-        gs, gt_gs = [], []
+        gs = []
         if self.log_transform:
             image, gs = transform_to_log(image)
             gs = np.expand_dims(gs, axis=2)
-            gt, gt_gs = transform_to_log(gt)
-            gt_gs = np.expand_dims(gt_gs, axis=2)
-            inputs = {'image': image, 'mask': mask, 'image2': gs, 'image4': gt_gs, 'image3': gt}
+            inputs = {'image': image, 'mask': mask, 'image2': gs, 'image3': gt}
             augmented = self.transforms(**inputs)
             gs = augmented['image2']
             gs = gs.squeeze()
-            gt_gs = augmented['image4']
-            gt_gs = gt_gs.squeeze()
         else:
             inputs = {'image': image, 'mask': mask, 'image3': gt}
             augmented = self.transforms(**inputs)
@@ -97,9 +94,8 @@ class MIDataset(Dataset):
         gt = augmented['image3']
         if self.preprocessing:
             if self.log_transform:
-                preprocessed = self.preprocessing(image=img, mask=mask, image3=gt, image2=gs, image4=gt_gs)
+                preprocessed = self.preprocessing(image=img, mask=mask, image3=gt, image2=gs)
                 gs = preprocessed['image2']
-                gt_gs = preprocessed['image4']
             else:
                 preprocessed = self.preprocessing(image=img, mask=mask, image2=gt)
             img = preprocessed['image']
@@ -112,7 +108,7 @@ class MIDataset(Dataset):
         mask = torch.tensor(mask.transpose(2, 0, 1), dtype=torch.float32, device="cuda")
         return (img, gs), \
                mask, \
-               (gt, gt_gs)
+               (gt)
 
     def __len__(self):
         return len(self.image_names)
